@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wodoor Property Listing — Enhanced Modal (Drop-in for DueDoor)</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+<style>
+/* ── DEMO WRAPPER — remove in production, only the modal matters ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#7C3AED;--brand-d:#5B21B6;--brand-l:#A78BFA;--brand-pale:#F0EBFF;
+  --bg:#F4F2FA;--bg2:#FDFCFF;--bg3:#EEEAF5;
+  --border:#E2DCF0;--border-d:#C5BBE0;
+  --text:#1A1035;--muted:#6B6480;--light:#9B93B5;
+  --green:#16A34A;--green-bg:#DCFCE7;
+  --shadow:0 1px 3px rgba(106,17,203,.07),0 2px 8px rgba(106,17,203,.05);
+  --shadow-md:0 4px 16px rgba(106,17,203,.12);
+  --shadow-lg:0 8px 32px rgba(106,17,203,.18);
+  --r:12px;
+  --f-h:'Outfit',sans-serif;
+  --f-b:'Plus Jakarta Sans',sans-serif;
+}
+body{font-family:var(--f-b);background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+
+/* ══════════════════════════════════════════════
+   WODOOR PROPERTY MODAL  — self-contained CSS
+   Prefixed .wo- to avoid any clash with DueDoor
+   ══════════════════════════════════════════════ */
+
+/* Overlay */
+.wo-modal-overlay{
+  position:fixed;inset:0;background:rgba(10,5,30,.55);
+  z-index:2000;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);padding:20px
+}
+.wo-modal-overlay.hidden{display:none}
+
+/* Modal box */
+.wo-modal{
+  background:#fff;border-radius:20px;
+  width:min(780px,100%);max-height:92vh;
+  overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 24px 80px rgba(75,0,130,.22),0 0 0 1px rgba(124,58,237,.08);
+  position:relative;
+}
+
+/* Header */
+.wo-modal-hdr{
+  padding:22px 28px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;background:#fff;position:relative;
+}
+.wo-modal-hdr::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#7c3aed,#2563eb);border-radius:20px 20px 0 0
+}
+.wo-modal-title{font-family:var(--f-h);font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.wo-modal-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.wo-close{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.wo-close:hover{background:var(--bg3);border-color:var(--border-d)}
+.wo-close iconify-icon{font-size:16px;color:var(--muted)}
+
+/* Progress steps */
+.wo-steps{display:flex;gap:0;padding:14px 28px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg)}
+.wo-step{flex:1;display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;border-radius:9px;transition:all .18s}
+.wo-step:hover{background:rgba(124,58,237,.06)}
+.wo-step.active .wo-step-num{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-color:transparent}
+.wo-step.done .wo-step-num{background:var(--green);color:#fff;border-color:transparent}
+.wo-step.active .wo-step-label{color:var(--brand);font-weight:700}
+.wo-step-num{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border-d);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--muted);flex-shrink:0;transition:all .25s;font-family:var(--f-h)}
+.wo-step-label{font-size:12px;font-weight:600;color:var(--muted)}
+.wo-step-sep{flex:1;height:1px;background:var(--border);max-width:32px;align-self:center}
+
+/* Body scroll */
+.wo-modal-body{flex:1;overflow-y:auto;padding:24px 28px}
+.wo-modal-body::-webkit-scrollbar{width:3px}
+.wo-modal-body::-webkit-scrollbar-thumb{background:var(--border-d);border-radius:3px}
+
+/* Footer */
+.wo-modal-ftr{
+  padding:16px 28px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  flex-shrink:0;background:#fff;
+}
+.wo-ftr-left{font-size:12px;color:var(--muted)}
+
+/* Panels */
+.wo-panel{display:none}
+.wo-panel.active{display:block;animation:woSlideIn .25s ease}
+@keyframes woSlideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+
+/* ── FIELD COMPONENTS ── */
+.wo-section{margin-bottom:24px}
+.wo-section-title{font-family:var(--f-h);font-size:13px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:7px;letter-spacing:-.2px}
+.wo-section-title iconify-icon{font-size:15px;color:var(--brand)}
+.wo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.wo-field{display:flex;flex-direction:column;gap:6px}
+.wo-field.full{grid-column:1/-1}
+.wo-label{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase}
+.wo-inp{width:100%;padding:10px 13px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;color:var(--text);font-size:13.5px;font-family:var(--f-b);outline:none;transition:all .2s;box-shadow:0 1px 3px rgba(106,17,203,.04)}
+.wo-inp:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(124,58,237,.09)}
+.wo-inp::placeholder{color:var(--light)}
+textarea.wo-inp{resize:vertical;min-height:80px;line-height:1.6}
+select.wo-inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236B6480' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+/* ── CATEGORY PICKER ── */
+.wo-cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.wo-cat{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .18s;background:var(--bg);text-align:center}
+.wo-cat:hover{border-color:var(--brand);background:var(--brand-pale)}
+.wo-cat.on{border-color:var(--brand);background:var(--brand-pale)}
+.wo-cat.on .wo-cat-lbl{color:var(--brand-d);font-weight:700}
+.wo-cat-ico{font-size:22px;line-height:1}
+.wo-cat-lbl{font-size:10.5px;color:var(--muted);font-weight:600}
+
+/* Listing type tabs */
+.wo-type-tabs{display:flex;background:var(--bg);border-radius:9px;padding:4px;width:fit-content;border:1.5px solid var(--border);gap:3px}
+.wo-type-tab{padding:7px 18px;font-family:var(--f-h);font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;border:none;background:transparent;border-radius:6px;transition:all .18s;letter-spacing:.3px}
+.wo-type-tab.on{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.25)}
+
+/* Tag pills */
+.wo-pills{display:flex;flex-wrap:wrap;gap:7px}
+.wo-pill{padding:6px 13px;border:1.5px solid var(--border);border-radius:100px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;background:var(--bg)}
+.wo-pill:hover,.wo-pill.on{border-color:var(--brand);color:var(--brand-d);background:var(--brand-pale)}
+
+/* ── AI LISTING BUILDER ── */
+.wo-ai-box{background:linear-gradient(135deg,#0d0720,#100828);border-radius:14px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(124,58,237,.2);position:relative;overflow:hidden}
+.wo-ai-box::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(124,58,237,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.05) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
+.wo-ai-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.35);color:#c4b5fd;font-size:10.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:100px;margin-bottom:14px}
+.wo-ai-tag iconify-icon{font-size:12px;color:#a78bfa}
+.wo-ai-title{font-family:var(--f-h);font-size:15px;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-.2px}
+.wo-ai-sub{font-size:12.5px;color:rgba(255,255,255,.45);line-height:1.65;margin-bottom:16px}
+/* Quick-select tag groups for AI prompt */
+.wo-ai-tags-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.wo-ai-stag{padding:5px 12px;border:1px solid rgba(255,255,255,.12);border-radius:100px;font-size:11.5px;font-weight:600;color:rgba(255,255,255,.55);cursor:pointer;transition:all .18s;background:rgba(255,255,255,.05)}
+.wo-ai-stag:hover,.wo-ai-stag.on{background:rgba(124,58,237,.25);border-color:rgba(124,58,237,.5);color:#c4b5fd}
+/* AI prompt area */
+.wo-ai-prompt-row{display:flex;gap:8px;position:relative;z-index:1}
+.wo-ai-inp{flex:1;padding:10px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;font-size:13px;font-family:var(--f-b);outline:none;resize:none;min-height:52px;line-height:1.6;transition:all .2s}
+.wo-ai-inp:focus{border-color:rgba(124,58,237,.6);background:rgba(124,58,237,.1);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.wo-ai-inp::placeholder{color:rgba(255,255,255,.25)}
+.wo-ai-btn{padding:10px 20px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:9px;color:#fff;font-family:var(--f-h);font-size:13px;font-weight:700;cursor:pointer;transition:all .22s;display:flex;align-items:center;gap:7px;white-space:nowrap;align-self:flex-end}
+.wo-ai-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.4)}
+.wo-ai-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.wo-ai-btn iconify-icon{font-size:15px}
+/* AI result preview */
+.wo-ai-result{margin-top:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;display:none;position:relative;z-index:1}
+.wo-ai-result.show{display:block;animation:woSlideIn .3s ease}
+.wo-ai-result-lbl{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.wo-ai-result-text{font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.7;white-space:pre-wrap}
+.wo-ai-apply-btn{padding:7px 16px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.5);border-radius:8px;color:#c4b5fd;font-size:12px;font-weight:700;cursor:pointer;transition:all .18s}
+.wo-ai-apply-btn:hover{background:rgba(124,58,237,.5);color:#fff}
+/* AI streaming indicator */
+.wo-ai-typing{display:inline-flex;align-items:center;gap:4px;margin-top:8px}
+.wo-ai-dot{width:5px;height:5px;border-radius:50%;background:#a78bfa;animation:woAiDot 1.2s ease infinite}
+.wo-ai-dot:nth-child(2){animation-delay:.2s}
+.wo-ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes woAiDot{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+/* ── IMAGE UPLOAD ZONE ── */
+.wo-img-zone{border:2px dashed var(--border-d);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg)}
+.wo-img-zone:hover,.wo-img-zone.drag{border-color:var(--brand);background:var(--brand-pale)}
+.wo-img-zone-ico{font-size:28px;margin-bottom:8px;display:block}
+.wo-img-zone-title{font-size:13px;font-weight:700;color:var(--text)}
+.wo-img-zone-sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+.wo-img-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:12px}
+.wo-img-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)}
+.wo-img-thumb img{width:100%;height:100%;object-fit:cover}
+.wo-img-thumb-del{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(220,38,38,.85);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px}
+.wo-img-cover-badge{position:absolute;bottom:4px;left:4px;background:rgba(124,58,237,.85);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px}
+
+/* ── REVIEW PANEL ── */
+.wo-review-card{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px}
+.wo-review-row{display:flex;gap:6px;font-size:13px;margin-bottom:7px;align-items:flex-start}
+.wo-review-row:last-child{margin-bottom:0}
+.wo-review-key{color:var(--muted);font-weight:600;min-width:110px;flex-shrink:0;font-size:12px}
+.wo-review-val{color:var(--text);font-weight:500;line-height:1.5}
+.wo-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:700}
+.wo-badge-green{background:var(--green-bg);color:var(--green)}
+.wo-badge-purple{background:var(--brand-pale);color:var(--brand-d);border:1px solid rgba(124,58,237,.2)}
+.wo-badge-orange{background:#FEF3C7;color:#B45309}
+
+/* Wodoor auto-publish toggle */
+.wo-publish-banner{background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(37,99,235,.06));border:1.5px solid rgba(124,58,237,.2);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.wo-publish-icon{width:40px;height:40px;background:linear-gradient(135deg,#7c3aed,#2563eb);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wo-publish-icon iconify-icon{font-size:20px;color:#fff}
+.wo-publish-text h4{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px;font-family:var(--f-h)}
+.wo-publish-text p{font-size:12px;color:var(--muted);line-height:1.5}
+/* Toggle */
+.wo-toggle{width:42px;height:24px;border-radius:12px;background:var(--border-d);cursor:pointer;position:relative;transition:all .22s;flex-shrink:0;border:none;padding:0}
+.wo-toggle.on{background:linear-gradient(135deg,#7c3aed,#2563eb)}
+.wo-toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .22s;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.wo-toggle.on::after{transform:translateX(18px)}
+
+/* Action buttons */
+.wo-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:9px;font-family:var(--f-h);font-size:13.5px;font-weight:700;cursor:pointer;transition:all .2s;border:none;letter-spacing:.2px}
+.wo-btn-primary{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}
+.wo-btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.35)}
+.wo-btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border-d)}
+.wo-btn-ghost:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-pale)}
+.wo-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* Attachment uploader */
+.wo-attach-zone{border:1.5px dashed var(--border-d);border-radius:10px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);margin-bottom:10px}
+.wo-attach-zone:hover{border-color:var(--brand);background:var(--brand-pale)}
+.wo-file-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)}
+.wo-file-ico{width:32px;height:32px;background:var(--brand-pale);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wo-file-ico iconify-icon{font-size:16px;color:var(--brand)}
+.wo-file-name{flex:1;font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wo-file-size{font-size:10.5px;color:var(--muted)}
+
+/* Toast */
+.wo-toast{position:fixed;bottom:28px;right:28px;background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.25);transition:all .3s;transform:translateY(0);display:flex;align-items:center;gap:8px;font-family:var(--f-b)}
+.wo-toast.hidden{transform:translateY(80px);opacity:0}
+.wo-toast.success{background:var(--green)}
+.wo-toast.error{background:#dc2626}
+
+/* Divider */
+.wo-divider{height:1px;background:var(--border);margin:20px 0}
+
+/* Range input */
+input[type=range].wo-range{-webkit-appearance:none;width:100%;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--brand) var(--pct,50%),var(--border) var(--pct,50%));outline:none;cursor:pointer}
+input[type=range].wo-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#2563eb);border:2.5px solid #fff;box-shadow:0 1px 6px rgba(124,58,237,.4);cursor:pointer;transition:transform .18s}
+input[type=range].wo-range::-webkit-slider-thumb:hover{transform:scale(1.3)}
+
+/* Wodoor live badge */
+.wo-live-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);color:var(--green);font-size:11px;font-weight:700;padding:4px 11px;border-radius:100px}
+.wo-live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:woPulse 2s infinite}
+@keyframes woPulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<!-- DEMO TRIGGER -->
+<button onclick="woOpenModal()" style="background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;padding:14px 32px;border:none;border-radius:10px;cursor:pointer;letter-spacing:.2px;box-shadow:0 6px 20px rgba(124,58,237,.3)">
+  + Add Property Listing
+</button>
+
+<!-- ══ WODOOR PROPERTY MODAL ══ -->
+<div class="wo-modal-overlay hidden" id="woPropModal">
+  <div class="wo-modal">
+
+    <!-- Header -->
+    <div class="wo-modal-hdr">
+      <div>
+        <div class="wo-modal-title" id="woModalTitle">Add Property Listing</div>
+        <div class="wo-modal-sub">List on DueDoor + auto-publish to Wodoor marketplace</div>
+      </div>
+      <button class="wo-close" onclick="woCloseModal()">
+        <iconify-icon icon="ph:x"></iconify-icon>
+      </button>
+    </div>
+
+    <!-- Steps -->
+    <div class="wo-steps">
+      <div class="wo-step active" id="woStep1" onclick="woGoto(1)">
+        <div class="wo-step-num" id="woStepNum1">1</div>
+        <div class="wo-step-label">Category</div>
+      </div>
+      <div class="wo-step-sep"></div>
+      <div class="wo-step" id="woStep2" onclick="woGoto(2)">
+        <div class="wo-step-num" id="woStepNum2">2</div>
+        <div class="wo-step-label">AI Builder</div>
+      </div>
+      <div class="wo-step-sep"></div>
+      <div class="wo-step" id="woStep3" onclick="woGoto(3)">
+        <div class="wo-step-num" id="woStepNum3">3</div>
+        <div class="wo-step-label">Details</div>
+      </div>
+      <div class="wo-step-sep"></div>
+      <div class="wo-step" id="woStep4" onclick="woGoto(4)">
+        <div class="wo-step-num" id="woStepNum4">4</div>
+        <div class="wo-step-label">Photos</div>
+      </div>
+      <div class="wo-step-sep"></div>
+      <div class="wo-step" id="woStep5" onclick="woGoto(5)">
+        <div class="wo-step-num" id="woStepNum5">5</div>
+        <div class="wo-step-label">Review & Publish</div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="wo-modal-body">
+      <input type="hidden" id="woPropId">
+
+      <!-- ══ STEP 1: CATEGORY ══ -->
+      <div class="wo-panel active" id="woPanel1">
+        <div class="wo-section">
+          <div class="wo-section-title"><iconify-icon icon="ph:squares-four"></iconify-icon>What type of property?</div>
+
+          <!-- Residential -->
+          <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Residential</div>
+          <div class="wo-cat-grid" style="margin-bottom:14px">
+            <div class="wo-cat on" onclick="woSelectCat(this,'apartment')" data-cat="apartment"><span class="wo-cat-ico">🏢</span><span class="wo-cat-lbl">Apartment / Flat</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'villa')" data-cat="villa"><span class="wo-cat-ico">🏡</span><span class="wo-cat-lbl">Villa / Bungalow</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'row_house')" data-cat="row_house"><span class="wo-cat-ico">🏘️</span><span class="wo-cat-lbl">Row House</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'independent_house')" data-cat="independent_house"><span class="wo-cat-ico">🏠</span><span class="wo-cat-lbl">Independent House</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'studio')" data-cat="studio"><span class="wo-cat-ico">🚪</span><span class="wo-cat-lbl">Studio Flat</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'penthouse')" data-cat="penthouse"><span class="wo-cat-ico">🌆</span><span class="wo-cat-lbl">Penthouse</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'pre_launch')" data-cat="pre_launch"><span class="wo-cat-ico">🏗️</span><span class="wo-cat-lbl">Pre-Launch / UC</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'farmhouse')" data-cat="farmhouse"><span class="wo-cat-ico">🌿</span><span class="wo-cat-lbl">Farmhouse</span></div>
+          </div>
+
+          <!-- Rental / Stay -->
+          <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Rental & Stay</div>
+          <div class="wo-cat-grid" style="margin-bottom:14px">
+            <div class="wo-cat" onclick="woSelectCat(this,'pg_hostel')" data-cat="pg_hostel"><span class="wo-cat-ico">🛏️</span><span class="wo-cat-lbl">PG / Hostel</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'guest_house')" data-cat="guest_house"><span class="wo-cat-ico">🏨</span><span class="wo-cat-lbl">Guest House</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'service_apt')" data-cat="service_apt"><span class="wo-cat-ico">🛎️</span><span class="wo-cat-lbl">Service Apartment</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'co_living')" data-cat="co_living"><span class="wo-cat-ico">🤝</span><span class="wo-cat-lbl">Co-Living Space</span></div>
+          </div>
+
+          <!-- Commercial -->
+          <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Commercial</div>
+          <div class="wo-cat-grid" style="margin-bottom:14px">
+            <div class="wo-cat" onclick="woSelectCat(this,'commercial_office')" data-cat="commercial_office"><span class="wo-cat-ico">💼</span><span class="wo-cat-lbl">Office Space</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'shop')" data-cat="shop"><span class="wo-cat-ico">🏪</span><span class="wo-cat-lbl">Shop / Retail</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'showroom')" data-cat="showroom"><span class="wo-cat-ico">🚗</span><span class="wo-cat-lbl">Showroom</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'warehouse')" data-cat="warehouse"><span class="wo-cat-ico">🏭</span><span class="wo-cat-lbl">Warehouse / Godown</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'it_park')" data-cat="it_park"><span class="wo-cat-ico">💻</span><span class="wo-cat-lbl">IT Park / SEZ</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'industrial')" data-cat="industrial"><span class="wo-cat-ico">⚙️</span><span class="wo-cat-lbl">Industrial Shed</span></div>
+          </div>
+
+          <!-- Land -->
+          <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Land & Plots</div>
+          <div class="wo-cat-grid">
+            <div class="wo-cat" onclick="woSelectCat(this,'plot')" data-cat="plot"><span class="wo-cat-ico">📐</span><span class="wo-cat-lbl">Residential Plot</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'agricultural')" data-cat="agricultural"><span class="wo-cat-ico">🌾</span><span class="wo-cat-lbl">Agricultural Land</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'farmland')" data-cat="farmland"><span class="wo-cat-ico">🌳</span><span class="wo-cat-lbl">Farmland</span></div>
+            <div class="wo-cat" onclick="woSelectCat(this,'eco_plot')" data-cat="eco_plot"><span class="wo-cat-ico">♻️</span><span class="wo-cat-lbl">Eco / Resort Plot</span></div>
+          </div>
+        </div>
+
+        <div class="wo-divider"></div>
+
+        <div class="wo-section">
+          <div class="wo-section-title"><iconify-icon icon="ph:tag"></iconify-icon>Listing type</div>
+          <div class="wo-type-tabs" id="woTypeTabs">
+            <button class="wo-type-tab on" onclick="woSelectType(this,'sale')">For Sale</button>
+            <button class="wo-type-tab" onclick="woSelectType(this,'rent')">For Rent</button>
+            <button class="wo-type-tab" onclick="woSelectType(this,'lease')">Lease</button>
+            <button class="wo-type-tab" onclick="woSelectType(this,'pg')">PG / Hostel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 2: AI BUILDER ══ -->
+      <div class="wo-panel" id="woPanel2">
+        <!-- AI listing builder -->
+        <div class="wo-ai-box">
+          <div class="wo-ai-tag"><iconify-icon icon="ph:robot"></iconify-icon>AI Listing Builder</div>
+          <div class="wo-ai-title">Generate your entire listing in seconds</div>
+          <div class="wo-ai-sub">Select quick tags below, or type a brief description — AI will write the title, description, highlights and amenities for you. Upload a brochure/PDF and AI extracts everything automatically.</div>
+
+          <!-- Quick tags: Price range -->
+          <div style="font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Budget range</div>
+          <div class="wo-ai-tags-row" id="woAiPriceTags">
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'price')">Under ₹20L</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'price')">₹20–50L</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'price')">₹50L–1Cr</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'price')">₹1–2Cr</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'price')">₹2–5Cr</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'price')">Above ₹5Cr</span>
+          </div>
+
+          <!-- Quick tags: Amenities -->
+          <div style="font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;margin-top:10px">Amenities (select all that apply)</div>
+          <div class="wo-ai-tags-row" id="woAiAmenityTags">
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Swimming Pool</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Gym</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Clubhouse</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">24/7 Security</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Power Backup</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Parking</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Garden</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Lift</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">CCTV</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Wi-Fi</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Gated Community</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Near Metro</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Near School</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Near Hospital</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">Vastu Compliant</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'amenity')">RERA Approved</span>
+          </div>
+
+          <!-- Quick tags: Highlights -->
+          <div style="font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;margin-top:10px">Highlights</div>
+          <div class="wo-ai-tags-row" id="woAiHighlightTags">
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'highlight')">Ready to Move</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'highlight')">Under Construction</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'highlight')">Corner Unit</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'highlight')">Sea View</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'highlight')">Park Facing</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'highlight')">East Facing</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'highlight')">Newly Renovated</span>
+            <span class="wo-ai-stag" onclick="woAiTagToggle(this,'highlight')">Loan Available</span>
+          </div>
+
+          <!-- Prompt + generate -->
+          <div style="font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;margin-top:14px">Or type any additional context</div>
+          <div class="wo-ai-prompt-row">
+            <textarea class="wo-ai-inp" id="woAiPrompt" placeholder="e.g. 3BHK apartment in Adyar Chennai, ground floor, independent entrance, quiet street, ideal for families…"></textarea>
+            <button class="wo-ai-btn" onclick="woGenerateListing()" id="woAiGenBtn">
+              <iconify-icon icon="ph:sparkle"></iconify-icon>Generate Listing
+            </button>
+          </div>
+
+          <!-- Result -->
+          <div class="wo-ai-result" id="woAiResult">
+            <div class="wo-ai-result-lbl">
+              <span>✨ AI Generated — review and apply</span>
+              <button class="wo-ai-apply-btn" onclick="woApplyAiResult()">Apply to form →</button>
+            </div>
+            <div class="wo-ai-result-text" id="woAiResultText"></div>
+          </div>
+        </div>
+
+        <!-- Attachment upload (AI extracts) -->
+        <div class="wo-section">
+          <div class="wo-section-title"><iconify-icon icon="ph:paperclip"></iconify-icon>Upload brochure / documents <span style="font-size:11px;font-weight:400;color:var(--muted)">— AI will extract details automatically</span></div>
+          <div class="wo-attach-zone" onclick="document.getElementById('woAttachInput').click()"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="woHandleAttachDrop(event)">
+            <div style="font-size:22px;margin-bottom:6px">📎</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">Drop brochure, price list, floor plan</div>
+            <div style="font-size:11.5px;color:var(--muted);margin-top:3px">PDF, Word, Images, Excel — AI extracts all property details</div>
+          </div>
+          <input type="file" id="woAttachInput" multiple accept="*/*" style="display:none" onchange="woHandleAttachSelect(this)">
+          <div id="woAttachList" style="display:flex;flex-direction:column;gap:7px"></div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 3: DETAILS ══ -->
+      <div class="wo-panel" id="woPanel3">
+        <div class="wo-section">
+          <div class="wo-section-title"><iconify-icon icon="ph:note-pencil"></iconify-icon>Property details</div>
+          <div class="wo-grid">
+            <div class="wo-field full">
+              <div class="wo-label">Property Name / Project Name *</div>
+              <input class="wo-inp" id="woPropName" placeholder="e.g. Prestige Skyline Tower, 3BHK Villa – Adyar">
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">Location / Area</div>
+              <input class="wo-inp" id="woPropLocation" placeholder="e.g. Adyar, Chennai">
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">City</div>
+              <select class="wo-inp" id="woPropCity">
+                <option value="">Select city…</option>
+                <option>Chennai</option><option>Mumbai</option><option>Bengaluru</option>
+                <option>Hyderabad</option><option>Delhi NCR</option><option>Pune</option>
+                <option>Coimbatore</option><option>Kochi</option><option>Kolkata</option>
+                <option>Ahmedabad</option><option>Jaipur</option><option>Other</option>
+              </select>
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">Price / Price Range</div>
+              <input class="wo-inp" id="woPropPrice" placeholder="e.g. ₹80L – ₹1.4Cr, ₹25K/mo">
+            </div>
+            <div class="wo-field" id="woBhkField">
+              <div class="wo-label">BHK / Configuration</div>
+              <div class="wo-pills" style="flex-wrap:wrap" id="woBhkPills">
+                <div class="wo-pill" onclick="this.classList.toggle('on');woSyncBhk()">Studio</div>
+                <div class="wo-pill" onclick="this.classList.toggle('on');woSyncBhk()">1 BHK</div>
+                <div class="wo-pill" onclick="this.classList.toggle('on');woSyncBhk()">2 BHK</div>
+                <div class="wo-pill" onclick="this.classList.toggle('on');woSyncBhk()">3 BHK</div>
+                <div class="wo-pill" onclick="this.classList.toggle('on');woSyncBhk()">4 BHK</div>
+                <div class="wo-pill" onclick="this.classList.toggle('on');woSyncBhk()">5+ BHK</div>
+                <div class="wo-pill" onclick="this.classList.toggle('on');woSyncBhk()">Duplex</div>
+                <div class="wo-pill" onclick="this.classList.toggle('on');woSyncBhk()">Villa</div>
+              </div>
+              <input class="wo-inp" id="woPropBhk" placeholder="e.g. 2 BHK, 3 BHK" style="margin-top:8px">
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">Possession / Availability</div>
+              <input class="wo-inp" id="woPropPossession" placeholder="Ready to Move / Dec 2026">
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">Area (sq.ft)</div>
+              <input class="wo-inp" id="woPropArea" type="number" placeholder="e.g. 1200">
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">Facing</div>
+              <select class="wo-inp" id="woPropFacing">
+                <option value="">Not specified</option>
+                <option>East</option><option>West</option><option>North</option><option>South</option>
+                <option>North-East</option><option>North-West</option><option>South-East</option><option>South-West</option>
+              </select>
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">RERA Number</div>
+              <input class="wo-inp" id="woPropRera" placeholder="e.g. TN/01/Building/0123/2024">
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">Website / Microsite URL</div>
+              <input class="wo-inp" id="woPropUrl" type="url" placeholder="https://yourproject.in">
+            </div>
+            <div class="wo-field full">
+              <div class="wo-label">Full Address</div>
+              <input class="wo-inp" id="woPropAddress" placeholder="Door no., Street, Area, City, Pincode">
+            </div>
+            <div class="wo-field full">
+              <div class="wo-label">Google Maps URL</div>
+              <input class="wo-inp" id="woPropMapUrl" placeholder="https://maps.app.goo.gl/...">
+            </div>
+          </div>
+        </div>
+
+        <div class="wo-divider"></div>
+
+        <div class="wo-section">
+          <div class="wo-section-title"><iconify-icon icon="ph:star"></iconify-icon>Amenities</div>
+          <div class="wo-pills" id="woAmenityPills">
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Swimming Pool</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Gym</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Clubhouse</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">24/7 Security</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Power Backup</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Covered Parking</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Garden / Park</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Lift</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">CCTV</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Children's Play Area</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Senior Citizen Area</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Indoor Games</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Fire Safety</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Intercom</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Wi-Fi</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">EV Charging</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Solar Panels</div>
+            <div class="wo-pill" onclick="this.classList.toggle('on');woSyncAmenities()">Rainwater Harvesting</div>
+          </div>
+          <input class="wo-inp" id="woPropAmenities" placeholder="Or type custom amenities…" style="margin-top:10px">
+        </div>
+
+        <div class="wo-divider"></div>
+
+        <div class="wo-section">
+          <div class="wo-section-title"><iconify-icon icon="ph:text-align-left"></iconify-icon>Description</div>
+          <textarea class="wo-inp" id="woPropDesc" placeholder="Key highlights, USPs, nearby landmarks, connectivity…" style="min-height:100px"></textarea>
+        </div>
+      </div>
+
+      <!-- ══ STEP 4: PHOTOS ══ -->
+      <div class="wo-panel" id="woPanel4">
+        <div class="wo-section">
+          <div class="wo-section-title"><iconify-icon icon="ph:images"></iconify-icon>Property photos <span style="font-size:11.5px;font-weight:400;color:var(--muted)">— First photo = cover image on Wodoor</span></div>
+          <div class="wo-img-zone" id="woImgZone"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="woHandleImgDrop(event)"
+            onclick="document.getElementById('woImgInput').click()">
+            <span class="wo-img-zone-ico">📸</span>
+            <div class="wo-img-zone-title">Drop photos here or click to browse</div>
+            <div class="wo-img-zone-sub">JPG, PNG, WebP — first photo is your cover image</div>
+          </div>
+          <input type="file" id="woImgInput" multiple accept="image/*" style="display:none" onchange="woHandleImgSelect(this)">
+
+          <!-- Preview grid -->
+          <div class="wo-img-preview" id="woImgPreview"></div>
+
+          <!-- Or paste URLs -->
+          <div style="margin-top:16px">
+            <div class="wo-label" style="margin-bottom:6px">Or paste image URLs (one per line)</div>
+            <textarea class="wo-inp" id="woPropImageUrls" placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg" style="min-height:70px;font-size:12px"></textarea>
+          </div>
+        </div>
+
+        <div class="wo-divider"></div>
+
+        <div class="wo-section">
+          <div class="wo-section-title"><iconify-icon icon="ph:video"></iconify-icon>Video & Virtual Tour</div>
+          <div class="wo-grid">
+            <div class="wo-field">
+              <div class="wo-label">YouTube / Video URL</div>
+              <input class="wo-inp" id="woPropVideo" placeholder="https://youtube.com/watch?v=...">
+            </div>
+            <div class="wo-field">
+              <div class="wo-label">Virtual Tour URL</div>
+              <input class="wo-inp" id="woPropVirtualTour" placeholder="https://matterport.com/...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 5: REVIEW & PUBLISH ══ -->
+      <div class="wo-panel" id="woPanel5">
+
+        <!-- Wodoor auto-publish toggle -->
+        <div class="wo-publish-banner">
+          <div class="wo-publish-icon"><iconify-icon icon="ph:globe-hemisphere-east"></iconify-icon></div>
+          <div class="wo-publish-text">
+            <h4>Auto-publish to Wodoor Marketplace</h4>
+            <p>When ON, this listing goes live on wodoor.com instantly — free, zero commission. Buyers can discover, save and swipe on it.</p>
+          </div>
+          <button class="wo-toggle on" id="woPublishToggle" onclick="this.classList.toggle('on')"></button>
+        </div>
+
+        <!-- Review summary -->
+        <div class="wo-review-card">
+          <div class="wo-section-title" style="margin-bottom:14px"><iconify-icon icon="ph:list-checks"></iconify-icon>Listing summary</div>
+          <div class="wo-review-row"><span class="wo-review-key">Category</span><span class="wo-review-val" id="rvCat">—</span></div>
+          <div class="wo-review-row"><span class="wo-review-key">Type</span><span class="wo-review-val" id="rvType">—</span></div>
+          <div class="wo-review-row"><span class="wo-review-key">Name</span><span class="wo-review-val" id="rvName">—</span></div>
+          <div class="wo-review-row"><span class="wo-review-key">Location</span><span class="wo-review-val" id="rvLoc">—</span></div>
+          <div class="wo-review-row"><span class="wo-review-key">Price</span><span class="wo-review-val" id="rvPrice">—</span></div>
+          <div class="wo-review-row"><span class="wo-review-key">BHK</span><span class="wo-review-val" id="rvBhk">—</span></div>
+          <div class="wo-review-row"><span class="wo-review-key">RERA</span><span class="wo-review-val" id="rvRera">—</span></div>
+          <div class="wo-review-row"><span class="wo-review-key">Photos</span><span class="wo-review-val" id="rvPhotos">—</span></div>
+          <div class="wo-review-row"><span class="wo-review-key">Description</span><span class="wo-review-val" id="rvDesc" style="max-height:48px;overflow:hidden">—</span></div>
+        </div>
+
+        <!-- Status chooser -->
+        <div class="wo-review-card">
+          <div class="wo-section-title" style="margin-bottom:12px"><iconify-icon icon="ph:traffic-sign"></iconify-icon>Listing status</div>
+          <div class="wo-pills">
+            <div class="wo-pill on" onclick="woSelectStatus(this,'active')" data-status="active">🟢 Active — List now</div>
+            <div class="wo-pill" onclick="woSelectStatus(this,'draft')" data-status="draft">📝 Save as Draft</div>
+            <div class="wo-pill" onclick="woSelectStatus(this,'paused')" data-status="paused">⏸️ Paused</div>
+          </div>
+        </div>
+
+        <!-- Checklist -->
+        <div class="wo-review-card" id="woChecklist">
+          <div class="wo-section-title" style="margin-bottom:12px"><iconify-icon icon="ph:check-circle"></iconify-icon>Pre-publish checklist</div>
+          <div id="woChecklistItems" style="display:flex;flex-direction:column;gap:7px"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="wo-modal-ftr">
+      <div class="wo-ftr-left" id="woFtrInfo">Step 1 of 5</div>
+      <div style="display:flex;gap:10px">
+        <button class="wo-btn wo-btn-ghost" onclick="woPrev()" id="woBtnBack" style="display:none"><iconify-icon icon="ph:arrow-left"></iconify-icon>Back</button>
+        <button class="wo-btn wo-btn-ghost" onclick="woCloseModal()">Cancel</button>
+        <button class="wo-btn wo-btn-primary" onclick="woNext()" id="woBtnNext"><iconify-icon icon="ph:arrow-right"></iconify-icon>Next</button>
+        <button class="wo-btn wo-btn-primary" onclick="woSaveProperty()" id="woBtnSave" style="display:none"><iconify-icon icon="ph:rocket-launch"></iconify-icon>Save & Publish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="wo-toast hidden" id="woToast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  WODOOR PROPERTY MODAL — Self-contained JS
+//  Drop this entire <script> block into duedoor_v62.html
+//  alongside the modal HTML above.
+//  It calls the same `sb` (Supabase client) and `clientId`
+//  already available in DueDoor — no new dependencies.
+// ═══════════════════════════════════════════════════════
+
+// ── State ──
+let woCurStep  = 1;
+let woTotalSteps = 5;
+let woEditId   = null;
+let woImgFiles = [];
+let woAttachFiles = [];
+let woSelectedCat  = 'apartment';
+let woSelectedType = 'sale';
+let woSelectedStatus = 'active';
+let woAiGenerated = null;   // raw AI JSON result
+let woAiParsed = {};        // parsed fields
+
+// ── Open / close ──
+function woOpenModal(editId) {
+  woReset();
+  woEditId = editId || null;
+  document.getElementById('woModalTitle').textContent = editId ? 'Edit Property Listing' : 'Add Property Listing';
+  if (editId) woLoadEdit(editId);
+  document.getElementById('woPropModal').classList.remove('hidden');
+}
+function woCloseModal() {
+  document.getElementById('woPropModal').classList.add('hidden');
+  woReset();
+}
+function woReset() {
+  woCurStep = 1;
+  woImgFiles = [];
+  woAttachFiles = [];
+  woEditId = null;
+  woAiGenerated = null;
+  woAiParsed = {};
+  // Clear all inputs
+  ['woPropId','woPropName','woPropLocation','woPropCity','woPropPrice',
+   'woPropBhk','woPropPossession','woPropArea','woPropFacing','woPropRera',
+   'woPropUrl','woPropAddress','woPropMapUrl','woPropAmenities','woPropDesc',
+   'woPropImageUrls','woPropVideo','woPropVirtualTour','woAiPrompt'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.querySelectorAll('.wo-pill.on,.wo-cat.on,.wo-ai-stag.on').forEach(el => el.classList.remove('on'));
+  document.querySelector('.wo-cat[data-cat="apartment"]').classList.add('on');
+  document.querySelectorAll('.wo-type-tab').forEach(t => t.classList.remove('on'));
+  document.querySelector('.wo-type-tab').classList.add('on');
+  document.querySelectorAll('.wo-pill[data-status]').forEach(p => p.classList.remove('on'));
+  document.querySelector('.wo-pill[data-status="active"]').classList.add('on');
+  document.getElementById('woAiResult').classList.remove('show');
+  document.getElementById('woImgPreview').innerHTML = '';
+  document.getElementById('woAttachList').innerHTML = '';
+  document.getElementById('woPropModal') && woGoto(1);
+  woSelectedCat  = 'apartment';
+  woSelectedType = 'sale';
+  woSelectedStatus = 'active';
+}
+
+// ── Step navigation ──
+function woGoto(step) {
+  if (step < 1 || step > woTotalSteps) return;
+  document.querySelectorAll('.wo-panel').forEach((p,i) => {
+    p.classList.toggle('active', i === step - 1);
+  });
+  for (let i = 1; i <= woTotalSteps; i++) {
+    const s = document.getElementById('woStep' + i);
+    const n = document.getElementById('woStepNum' + i);
+    s.classList.remove('active','done');
+    if (i === step) { s.classList.add('active'); n.textContent = i; }
+    else if (i < step) { s.classList.add('done'); n.innerHTML = '✓'; }
+    else { n.textContent = i; }
+  }
+  woCurStep = step;
+  document.getElementById('woFtrInfo').textContent = `Step ${step} of ${woTotalSteps}`;
+  document.getElementById('woBtnBack').style.display = step > 1 ? '' : 'none';
+  document.getElementById('woBtnNext').style.display = step < woTotalSteps ? '' : 'none';
+  document.getElementById('woBtnSave').style.display = step === woTotalSteps ? '' : 'none';
+  if (step === woTotalSteps) woPopulateReview();
+}
+function woNext() { woGoto(woCurStep + 1); }
+function woPrev() { woGoto(woCurStep - 1); }
+
+// ── Category & type ──
+function woSelectCat(el, cat) {
+  document.querySelectorAll('.wo-cat').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  woSelectedCat = cat;
+}
+function woSelectType(el, type) {
+  document.querySelectorAll('.wo-type-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  woSelectedType = type;
+}
+function woSelectStatus(el, status) {
+  document.querySelectorAll('.wo-pill[data-status]').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  woSelectedStatus = status;
+}
+
+// ── Pill sync helpers ──
+function woSyncBhk() {
+  const on = [...document.querySelectorAll('#woBhkPills .wo-pill.on')].map(p => p.textContent);
+  document.getElementById('woPropBhk').value = on.join(', ');
+}
+function woSyncAmenities() {
+  const on = [...document.querySelectorAll('#woAmenityPills .wo-pill.on')].map(p => p.textContent);
+  const extra = document.getElementById('woPropAmenities').value.trim();
+  document.getElementById('woPropAmenities').value = on.length ? on.join(', ') + (extra ? ', ' + extra : '') : extra;
+}
+
+// ── AI tag toggle ──
+function woAiTagToggle(el) { el.classList.toggle('on'); }
+
+// ── AI GENERATE LISTING ──
+async function woGenerateListing() {
+  const btn = document.getElementById('woAiGenBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="wo-ai-typing"><span class="wo-ai-dot"></span><span class="wo-ai-dot"></span><span class="wo-ai-dot"></span></span>';
+
+  // Build context from selected tags + manual prompt
+  const price = [...document.querySelectorAll('#woAiPriceTags .wo-ai-stag.on')].map(e => e.textContent).join(', ');
+  const amenities = [...document.querySelectorAll('#woAiAmenityTags .wo-ai-stag.on')].map(e => e.textContent).join(', ');
+  const highlights = [...document.querySelectorAll('#woAiHighlightTags .wo-ai-stag.on')].map(e => e.textContent).join(', ');
+  const manual = document.getElementById('woAiPrompt').value.trim();
+  const catLabel = document.querySelector('.wo-cat.on .wo-cat-lbl')?.textContent || woSelectedCat;
+  const typeLabel = document.querySelector('.wo-type-tab.on')?.textContent || woSelectedType;
+
+  const prompt = `You are a professional Indian real estate listing writer. Generate a compelling property listing in JSON format.
+
+Property context:
+- Category: ${catLabel}
+- Listing type: ${typeLabel}
+- Price range: ${price || 'Not specified'}
+- Amenities: ${amenities || 'Not specified'}
+- Highlights: ${highlights || 'Not specified'}
+- Additional details: ${manual || 'None provided'}
+
+Return ONLY a JSON object with these exact keys (no markdown, no preamble):
+{
+  "title": "compelling property title (max 80 chars)",
+  "description": "3-4 sentence marketing description highlighting key selling points, location advantages, lifestyle benefits. Make it feel premium and desirable.",
+  "price_label": "formatted price string e.g. ₹1.4 Cr onwards / ₹25,000/month",
+  "amenities_list": ["amenity1","amenity2",...],
+  "highlights": ["highlight1","highlight2","highlight3"],
+  "possession": "possession status e.g. Ready to Move / Dec 2026",
+  "seo_description": "one-line SEO description under 155 chars"
+}`;
+
+  try {
+    const res = await fetch('https://ultfiieoqalvuptdlghr.supabase.co/functions/v1/wodoor-ai-listing', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        category:     woSelectedCat,
+        listing_type: woSelectedType,
+        price,
+        amenities,
+        highlights,
+        prompt: manual
+      })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'AI generation failed');
+    woAiParsed = data.listing;
+    const preview = `📌 Title: ${woAiParsed.title}\n\n📝 Description:\n${woAiParsed.description}\n\n💰 Price: ${woAiParsed.price_label || '—'}\n\n✅ Highlights: ${(woAiParsed.highlights||[]).join(' · ')}\n\n🏊 Amenities: ${(woAiParsed.amenities_list||[]).join(', ')}\n\n🔑 Possession: ${woAiParsed.possession || '—'}`;
+    document.getElementById('woAiResultText').textContent = preview;
+    document.getElementById('woAiResult').classList.add('show');
+  } catch(e) {
+    woToast('AI generation failed — check ANTHROPIC_API_KEY is set in Supabase Edge Function secrets', 'error');
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<iconify-icon icon="ph:sparkle"></iconify-icon>Regenerate';
+}
+
+// Apply AI result to the form fields
+function woApplyAiResult() {
+  if (!woAiParsed) return;
+  if (woAiParsed.title) document.getElementById('woPropName').value = woAiParsed.title;
+  if (woAiParsed.description) document.getElementById('woPropDesc').value = woAiParsed.description;
+  if (woAiParsed.price_label) document.getElementById('woPropPrice').value = woAiParsed.price_label;
+  if (woAiParsed.possession) document.getElementById('woPropPossession').value = woAiParsed.possession;
+  if (woAiParsed.amenities_list?.length) {
+    document.getElementById('woPropAmenities').value = woAiParsed.amenities_list.join(', ');
+  }
+  woToast('✨ AI content applied to form — review and edit as needed', 'success');
+}
+
+// ── Image handling ──
+let woImgPreviews = [];
+function woHandleImgDrop(e) {
+  e.preventDefault();
+  document.getElementById('woImgZone').classList.remove('drag');
+  woAddImages(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
+}
+function woHandleImgSelect(input) {
+  woAddImages(Array.from(input.files));
+  input.value = '';
+}
+function woAddImages(files) {
+  files.forEach(f => {
+    const url = URL.createObjectURL(f);
+    woImgFiles.push({file: f, url});
+  });
+  woRenderImgPreview();
+}
+function woRenderImgPreview() {
+  const el = document.getElementById('woImgPreview');
+  el.innerHTML = woImgFiles.map((img, i) => `
+    <div class="wo-img-thumb">
+      <img src="${img.url}" alt="Photo ${i+1}">
+      ${i===0 ? '<div class="wo-img-cover-badge">Cover</div>' : ''}
+      <button class="wo-img-thumb-del" onclick="woRemoveImg(${i})">×</button>
+    </div>`).join('');
+}
+function woRemoveImg(i) {
+  URL.revokeObjectURL(woImgFiles[i].url);
+  woImgFiles.splice(i, 1);
+  woRenderImgPreview();
+}
+
+// ── Attachment handling ──
+function woHandleAttachDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag');
+  woAddAttachments(Array.from(e.dataTransfer.files));
+}
+function woHandleAttachSelect(input) {
+  woAddAttachments(Array.from(input.files));
+  input.value = '';
+}
+function woAddAttachments(files) {
+  woAttachFiles = [...woAttachFiles, ...files];
+  woRenderAttachList();
+}
+function woRenderAttachList() {
+  const icons = {pdf:'ph:file-pdf',image:'ph:image',default:'ph:file'};
+  document.getElementById('woAttachList').innerHTML = woAttachFiles.map((f,i) => {
+    const ico = f.type.includes('pdf') ? icons.pdf : f.type.includes('image') ? icons.image : icons.default;
+    return `<div class="wo-file-row">
+      <div class="wo-file-ico"><iconify-icon icon="${ico}"></iconify-icon></div>
+      <div style="flex:1;min-width:0">
+        <div class="wo-file-name">${f.name}</div>
+        <div class="wo-file-size">${(f.size/1024/1024).toFixed(2)} MB</div>
+      </div>
+      <button onclick="woAttachFiles.splice(${i},1);woRenderAttachList()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px">×</button>
+    </div>`;
+  }).join('');
+}
+
+// ── Review panel ──
+function woPopulateReview() {
+  const catLabel = document.querySelector('.wo-cat.on .wo-cat-lbl')?.textContent || woSelectedCat;
+  const typeLabel = document.querySelector('.wo-type-tab.on')?.textContent || woSelectedType;
+  document.getElementById('rvCat').textContent   = catLabel;
+  document.getElementById('rvType').textContent  = typeLabel;
+  document.getElementById('rvName').textContent  = document.getElementById('woPropName').value || '—';
+  const city = document.getElementById('woPropCity').value;
+  const loc  = document.getElementById('woPropLocation').value;
+  document.getElementById('rvLoc').textContent   = [loc, city].filter(Boolean).join(', ') || '—';
+  document.getElementById('rvPrice').textContent = document.getElementById('woPropPrice').value || '—';
+  document.getElementById('rvBhk').textContent   = document.getElementById('woPropBhk').value || '—';
+  const rera = document.getElementById('woPropRera').value;
+  document.getElementById('rvRera').innerHTML = rera
+    ? `<span class="wo-badge wo-badge-green">${rera}</span>`
+    : '<span style="color:var(--muted)">Not provided</span>';
+  const photoCount = woImgFiles.length +
+    (document.getElementById('woPropImageUrls').value.trim().split('\n').filter(Boolean).length);
+  document.getElementById('rvPhotos').innerHTML = photoCount
+    ? `<span class="wo-badge wo-badge-purple">${photoCount} photo${photoCount!==1?'s':''}</span>`
+    : '<span style="color:#B45309">⚠️ No photos added</span>';
+  const desc = document.getElementById('woPropDesc').value;
+  document.getElementById('rvDesc').textContent = desc ? desc.slice(0,120) + (desc.length>120?'…':'') : '—';
+
+  // Checklist
+  const checks = [
+    {label:'Property name', ok: !!document.getElementById('woPropName').value},
+    {label:'Location', ok: !!(document.getElementById('woPropLocation').value || document.getElementById('woPropCity').value)},
+    {label:'Price', ok: !!document.getElementById('woPropPrice').value},
+    {label:'At least 1 photo', ok: photoCount > 0},
+    {label:'Description', ok: desc.length > 20},
+    {label:'RERA/DTCP number', ok: !!rera, optional: true},
+  ];
+  document.getElementById('woChecklistItems').innerHTML = checks.map(c =>
+    `<div style="display:flex;align-items:center;gap:9px;font-size:13px;${!c.ok && !c.optional ? 'color:#DC2626' : ''}">
+      <iconify-icon icon="${c.ok ? 'ph:check-circle-fill' : (c.optional ? 'ph:circle' : 'ph:warning-circle-fill')}"
+        style="font-size:16px;color:${c.ok ? '#16A34A' : c.optional ? 'var(--muted)' : '#DC2626'};flex-shrink:0"></iconify-icon>
+      ${c.label}${c.optional ? ' <span style="font-size:11px;color:var(--muted)">(optional)</span>' : ''}
+    </div>`
+  ).join('');
+}
+
+// ── SAVE PROPERTY ──
+// This function:
+// 1. Saves to DueDoor's existing property_listings table (unchanged)
+// 2. If "Publish to Wodoor" is ON, also inserts into wo_listings
+async function woSaveProperty() {
+  const name = document.getElementById('woPropName').value.trim();
+  if (!name) { woToast('Property name is required', 'error'); return; }
+
+  const btn = document.getElementById('woBtnSave');
+  btn.disabled = true;
+  btn.innerHTML = '<iconify-icon icon="ph:spinner" style="animation:spin 1s linear infinite"></iconify-icon> Saving…';
+
+  const imgUrlsRaw = (document.getElementById('woPropImageUrls')?.value || '').trim();
+  const imageUrlsPasted = imgUrlsRaw ? imgUrlsRaw.split('\n').map(u => u.trim()).filter(Boolean) : [];
+  // In production: upload woImgFiles to Supabase storage and get URLs
+  const imageUrls = imageUrlsPasted; // + uploaded file URLs
+  const city    = document.getElementById('woPropCity').value;
+  const loc     = document.getElementById('woPropLocation').value.trim();
+  const price   = document.getElementById('woPropPrice').value.trim();
+
+  // ── 1. Save to DueDoor property_listings (exactly as before, unchanged) ──
+  const ddPayload = {
+    client_id:       typeof clientId !== 'undefined' ? clientId : null,
+    name,
+    location:        loc,
+    price_range:     price,
+    bhk_types:       document.getElementById('woPropBhk').value.trim(),
+    possession:      document.getElementById('woPropPossession').value.trim(),
+    website_url:     document.getElementById('woPropUrl').value.trim(),
+    amenities:       document.getElementById('woPropAmenities').value.trim(),
+    description:     document.getElementById('woPropDesc').value.trim(),
+    image_urls:      imageUrls.length ? imageUrls : null,
+    location_map_url:document.getElementById('woPropMapUrl').value.trim() || null,
+    address:         document.getElementById('woPropAddress').value.trim() || null,
+    rera_number:     document.getElementById('woPropRera').value.trim() || null,
+    video_url:       document.getElementById('woPropVideo').value.trim() || null,
+    status:          woSelectedStatus === 'active' ? 'active' : 'inactive',
+    tags:            [woSelectedCat, woSelectedType],
+  };
+
+  let propId = woEditId;
+  // Use DueDoor's existing `sb` client if available, otherwise demo mode
+  const supabase = typeof sb !== 'undefined' ? sb : null;
+
+  if (supabase) {
+    if (propId) {
+      await supabase.from('property_listings').update({...ddPayload, updated_at: new Date().toISOString()}).eq('id', propId);
+    } else {
+      const { data } = await supabase.from('property_listings').insert(ddPayload).select().single();
+      propId = data?.id;
+    }
+
+    // Upload attachments using DueDoor's existing uploadPropertyAttachment function
+    if (woAttachFiles.length && propId && typeof uploadPropertyAttachment === 'function') {
+      for (const file of woAttachFiles) {
+        await uploadPropertyAttachment(file, propId, 'brochure');
+      }
+    }
+  }
+
+  // ── 2. Publish to Wodoor wo_listings (NEW — additive only) ──
+  const publishToWodoor = document.getElementById('woPublishToggle').classList.contains('on');
+  if (publishToWodoor && supabase && propId) {
+    const woPayload = {
+      client_id:           typeof clientId !== 'undefined' ? clientId : null,
+      property_listing_id: propId,
+      title:               name,
+      category:            woSelectedCat,
+      listing_type:        woSelectedType,
+      price_label:         price,
+      bhk:                 document.getElementById('woPropBhk').value.trim(),
+      area_sqft:           parseInt(document.getElementById('woPropArea').value) || null,
+      location:            loc || city,
+      city:                city || loc,
+      area:                loc,
+      cover_image_url:     imageUrls[0] || null,
+      image_urls:          imageUrls,
+      description:         document.getElementById('woPropDesc').value.trim(),
+      ai_description:      woAiParsed?.description || null,
+      amenities:           document.getElementById('woPropAmenities').value.split(',').map(a=>a.trim()).filter(Boolean),
+      possession:          document.getElementById('woPropPossession').value.trim(),
+      rera_number:         document.getElementById('woPropRera').value.trim() || null,
+      video_url:           document.getElementById('woPropVideo').value.trim() || null,
+      virtual_tour_url:    document.getElementById('woPropVirtualTour').value.trim() || null,
+      facing:              document.getElementById('woPropFacing').value || null,
+      status:              woSelectedStatus === 'active' ? 'active' : 'draft',
+    };
+
+    if (propId) {
+      // Upsert: update wo_listings if already linked, insert if new
+      const { data: existing } = await supabase
+        .from('wo_listings').select('id').eq('property_listing_id', propId).maybeSingle();
+      if (existing?.id) {
+        await supabase.from('wo_listings').update({...woPayload, updated_at: new Date().toISOString()}).eq('id', existing.id);
+      } else {
+        await supabase.from('wo_listings').insert(woPayload);
+      }
+    }
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<iconify-icon icon="ph:rocket-launch"></iconify-icon>Save & Publish';
+  woCloseModal();
+  woToast(
+    publishToWodoor
+      ? '✅ Property saved & published to Wodoor marketplace!'
+      : '✅ Property saved to DueDoor catalog',
+    'success'
+  );
+
+  // Call DueDoor's existing functions (unchanged)
+  if (typeof loadProperties === 'function') loadProperties();
+  if (typeof syncVapiKnowledge === 'function') setTimeout(() => syncVapiKnowledge(true), 1500);
+}
+
+// ── Load edit ──
+async function woLoadEdit(id) {
+  const supabase = typeof sb !== 'undefined' ? sb : null;
+  if (!supabase) return;
+  const { data: p } = await supabase.from('property_listings').select('*').eq('id',id).single();
+  if (!p) return;
+  document.getElementById('woPropId').value = id;
+  document.getElementById('woPropName').value      = p.name || '';
+  document.getElementById('woPropLocation').value  = p.location || '';
+  document.getElementById('woPropPrice').value     = p.price_range || '';
+  document.getElementById('woPropBhk').value       = p.bhk_types || '';
+  document.getElementById('woPropPossession').value= p.possession || '';
+  document.getElementById('woPropUrl').value       = p.website_url || '';
+  document.getElementById('woPropAmenities').value = p.amenities || '';
+  document.getElementById('woPropDesc').value      = p.description || '';
+  document.getElementById('woPropRera').value      = p.rera_number || '';
+  document.getElementById('woPropAddress').value   = p.address || '';
+  document.getElementById('woPropMapUrl').value    = p.location_map_url || '';
+  document.getElementById('woPropVideo').value     = p.video_url || '';
+  document.getElementById('woPropImageUrls').value = Array.isArray(p.image_urls) ? p.image_urls.join('\n') : '';
+  // Check category from tags
+  if (Array.isArray(p.tags) && p.tags[0]) {
+    const catEl = document.querySelector(`.wo-cat[data-cat="${p.tags[0]}"]`);
+    if (catEl) { document.querySelectorAll('.wo-cat').forEach(c=>c.classList.remove('on')); catEl.classList.add('on'); woSelectedCat = p.tags[0]; }
+  }
+  // Check wo_listing for Wodoor publish state
+  const { data: wo } = await supabase.from('wo_listings').select('status').eq('property_listing_id', id).maybeSingle();
+  if (wo?.status === 'active') document.getElementById('woPublishToggle').classList.add('on');
+  else document.getElementById('woPublishToggle').classList.remove('on');
+}
+
+// ── Toast ──
+let woToastTimer;
+function woToast(msg, type='info') {
+  const el = document.getElementById('woToast');
+  el.textContent = msg;
+  el.className = `wo-toast ${type}`;
+  clearTimeout(woToastTimer);
+  woToastTimer = setTimeout(() => el.classList.add('hidden'), 3500);
+}
+
+// ── Keyframe for spinner ──
+const style = document.createElement('style');
+style.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+
+// Demo: open automatically
+window.addEventListener('DOMContentLoaded', () => { /* noop — triggered by button */ });
+</script>
+</body>
+</html>
