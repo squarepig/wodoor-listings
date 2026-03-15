@@ -4,613 +4,568 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Wodoor — Find Your Home</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Wodoor — World's Smartest Property Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{--brand:#7C3AED;--brand-d:#5B21B6;--brand-l:#A78BFA;--brand-pale:#F0EBFF;--dark:#050310;--dark2:#0d0720;--text:#1A1035;--muted:#6B6480;--border:#E2DCF0;--green:#16A34A;--red:#DC2626;--f-h:'Outfit',sans-serif;--f-b:'Plus Jakarta Sans',sans-serif;}
-html,body{height:100%;overflow:hidden;background:var(--dark);font-family:var(--f-b);color:#fff;-webkit-font-smoothing:antialiased}
+:root{--brand:#7C3AED;--brand-d:#5B21B6;--brand-l:#A78BFA;--brand-pale:#F0EBFF;--dark:#050310;--dark2:#0d0720;--text:#1A1035;--muted:#6B6480;--border:#E2DCF0;--green:#16A34A;--f-h:'Outfit',sans-serif;--f-b:'Plus Jakarta Sans',sans-serif}
+html,body{height:100%;overflow:hidden;background:var(--dark);font-family:var(--f-b);color:#fff}
 body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative}
 .screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
 
-/* SCREEN PHONE */
-#screen-phone{background:linear-gradient(165deg,#050310 0%,#100828 50%,#0a1628 100%)}
-#screen-phone::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(124,58,237,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.06) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 20%,transparent 75%);pointer-events:none}
-.ph-inner{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:max(env(safe-area-inset-top),44px) 28px max(env(safe-area-inset-bottom),32px)}
-.auth-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
-.auth-nav-logo{height:30px;object-fit:contain}
-.auth-nav-tag{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);text-align:right;line-height:1.4}
-.auth-nav-tag em{font-style:normal;color:#a78bfa}
-.auth-eyebrow{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.3);border-radius:100px;padding:5px 13px;font-size:10.5px;font-weight:800;color:#c4b5fd;letter-spacing:.4px;margin-bottom:16px}
-.auth-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:#a78bfa;animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.auth-h1{font-family:var(--f-h);font-size:clamp(28px,8vw,36px);font-weight:900;line-height:1.08;letter-spacing:-1.5px;margin-bottom:10px}
+/* AUTH */
+#screen-auth{background:linear-gradient(165deg,#050310,#100828);overflow-y:auto;overflow-x:hidden}
+#screen-auth::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(124,58,237,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.06) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 20%,transparent 75%);pointer-events:none;z-index:0}
+.auth-scroll{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;padding:44px 24px 40px}
+.auth-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.auth-logo-img{height:36px;width:auto;filter:brightness(0) invert(1)}
+.auth-logo-fb{font-family:var(--f-h);font-size:24px;font-weight:900;color:#fff;letter-spacing:-.5px}
+.auth-logo-fb span{background:linear-gradient(90deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.auth-tagline-row{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;font-family:var(--f-h);margin-bottom:28px}
+.auth-h1{font-family:var(--f-h);font-size:34px;font-weight:900;line-height:1.1;letter-spacing:-1.5px;margin-bottom:10px}
 .auth-h1 em{font-style:normal;background:linear-gradient(90deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.auth-sub{font-size:13.5px;color:rgba(255,255,255,.4);line-height:1.7;margin-bottom:auto}
-.auth-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:22px 20px;margin-top:28px}
-.auth-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:.9px;text-transform:uppercase;margin-bottom:8px}
-.phone-row{display:flex;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;overflow:hidden;margin-bottom:10px;transition:border-color .2s}
-.phone-row:focus-within{border-color:rgba(124,58,237,.6)}
-.phone-flag{padding:0 14px;display:flex;align-items:center;border-right:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);flex-shrink:0;gap:6px;font-size:16px}
-.phone-prefix{font-size:14px;font-weight:700;color:rgba(255,255,255,.5)}
-.phone-inp{flex:1;background:transparent;border:none;outline:none;padding:16px 14px;font-size:18px;color:#fff;font-family:var(--f-h);font-weight:600;min-width:0;letter-spacing:.5px}
-.phone-inp::placeholder{color:rgba(255,255,255,.2);font-weight:400;letter-spacing:0;font-size:15px;font-family:var(--f-b)}
-.btn-wa{width:100%;padding:16px;background:linear-gradient(135deg,#128C7E,#25D366);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;font-family:var(--f-h);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.2px}
-.btn-wa:active{opacity:.9}
-.btn-wa:disabled{opacity:.5;cursor:not-allowed}
-.auth-err{font-size:12px;color:#f87171;min-height:18px;margin-bottom:8px;text-align:center}
+.auth-sub{font-size:13px;color:rgba(255,255,255,.4);line-height:1.7;margin-bottom:28px}
+.wa-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.25);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:700;color:#34d399;margin-bottom:16px}
+.auth-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:20px}
+.auth-step{display:none}
+.auth-step.active{display:block}
+.flbl{font-size:10.5px;font-weight:800;color:rgba(255,255,255,.4);letter-spacing:.9px;text-transform:uppercase;margin-bottom:8px}
+.phone-row{display:flex;align-items:stretch;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;overflow:hidden;margin-bottom:8px}
+.phone-pfx{padding:0 12px;font-size:14px;font-weight:700;color:rgba(255,255,255,.45);border-right:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.2);display:flex;align-items:center;flex-shrink:0;white-space:nowrap}
+.phone-inp{flex:1;min-width:0;background:transparent;border:none;outline:none;padding:14px 12px;font-size:17px;color:#fff;font-family:var(--f-b)}
+.phone-inp::placeholder{color:rgba(255,255,255,.2)}
+.name-inp{display:block;width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 14px;font-size:15px;color:#fff;font-family:var(--f-b);outline:none;margin-bottom:14px}
+.name-inp::placeholder{color:rgba(255,255,255,.2)}
+.name-inp:focus{border-color:rgba(124,58,237,.6)}
 
-/* SCREEN OTP */
-#screen-otp{background:linear-gradient(165deg,#050310 0%,#100828 50%,#0a1628 100%)}
-#screen-otp::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(124,58,237,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.06) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 20%,transparent 75%);pointer-events:none}
-.otp-inner{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:max(env(safe-area-inset-top),44px) 28px max(env(safe-area-inset-bottom),32px);overflow-y:auto}
-.otp-back{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 16px;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--f-b);display:inline-flex;align-items:center;gap:6px;margin-bottom:28px;width:fit-content}
-.otp-sent-badge{display:flex;align-items:center;gap:10px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.2);border-radius:12px;padding:12px 14px;margin-bottom:24px}
-.otp-sent-phone{font-weight:800;color:#34d399;font-size:13px;display:block;margin-bottom:2px}
-.otp-sent-txt{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5}
-.otp-h{font-family:var(--f-h);font-size:24px;font-weight:900;letter-spacing:-.8px;margin-bottom:5px}
-.otp-sub{font-size:13px;color:rgba(255,255,255,.38);margin-bottom:22px}
-.otp-name-inp{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px;font-size:15px;color:#fff;font-family:var(--f-b);outline:none;margin-bottom:18px;transition:border-color .2s}
-.otp-name-inp::placeholder{color:rgba(255,255,255,.25)}
-.otp-name-inp:focus{border-color:rgba(124,58,237,.6)}
-.otp-boxes{display:flex;gap:10px;margin-bottom:12px}
-.otp-box{flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;padding:17px 0;font-size:26px;font-weight:900;color:#fff;text-align:center;font-family:var(--f-h);outline:none;transition:all .18s;-webkit-appearance:none}
-.otp-box:focus{border-color:rgba(124,58,237,.7);background:rgba(124,58,237,.12)}
-.otp-box.filled{border-color:rgba(124,58,237,.5)}
-.otp-resend{font-size:12px;color:rgba(255,255,255,.32);text-align:center;margin-bottom:16px}
-.otp-resend button{background:none;border:none;color:#a78bfa;font-weight:700;cursor:pointer;font-family:var(--f-b);font-size:12px}
-.btn-verify{width:100%;padding:16px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;font-family:var(--f-h);cursor:pointer}
-.btn-verify:disabled{opacity:.5;cursor:not-allowed}
-.otp-err{font-size:12px;color:#f87171;min-height:18px;margin-bottom:8px;text-align:center}
+/* OTP — KEY FIX: 4 equal boxes, no overflow */
+.otp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+.otp-box{width:100%;height:64px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.12);border-radius:12px;font-size:28px;font-weight:800;color:#fff;text-align:center;font-family:var(--f-h);outline:none;caret-color:transparent;padding:0;display:block}
+.otp-box:focus{border-color:rgba(124,58,237,.7);background:rgba(124,58,237,.1)}
+.otp-hint{font-size:12px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:12px;line-height:1.6}
+.otp-hint strong{color:rgba(255,255,255,.55)}
+
+.btn-main{display:block;width:100%;padding:16px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;font-family:var(--f-h);cursor:pointer;letter-spacing:.3px;margin-bottom:10px}
+.btn-main:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{display:block;width:100%;padding:13px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-size:13px;font-weight:600;font-family:var(--f-b);cursor:pointer}
+.err-msg{font-size:12px;color:#f87171;min-height:16px;margin-bottom:8px;text-align:center}
+.resend-row{text-align:center;font-size:12px;color:rgba(255,255,255,.3);margin-top:6px}
+.resend-btn{background:none;border:none;color:rgba(167,139,250,.8);cursor:pointer;text-decoration:underline;font-size:12px;font-family:var(--f-b)}
 
 /* PREFS */
-#screen-prefs{background:var(--dark)}
-.prefs-hdr{background:linear-gradient(135deg,#050310,#100828);padding:max(env(safe-area-inset-top),18px) 20px 14px;border-bottom:1px solid rgba(124,58,237,.15);flex-shrink:0}
-.prefs-prog{height:3px;background:rgba(255,255,255,.1);border-radius:3px;margin-bottom:11px;overflow:hidden}
-.prefs-prog-bar{height:100%;background:linear-gradient(90deg,#7c3aed,#2563eb);border-radius:3px;transition:width .4s}
-.prefs-nav-row{display:flex;justify-content:space-between;align-items:center}
-.prefs-lbl{font-size:11.5px;color:rgba(255,255,255,.38)}
-.prefs-skip{background:none;border:none;font-size:12px;color:rgba(255,255,255,.28);cursor:pointer;font-family:var(--f-b)}
-.pstep{display:none;flex-direction:column;flex:1;overflow:hidden}
-.pstep.active{display:flex}
-.pstep-body{flex:1;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch}
-.pstep-body::-webkit-scrollbar{display:none}
-.prefs-q{font-family:var(--f-h);font-size:21px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
-.prefs-sub{font-size:12.5px;color:rgba(255,255,255,.35);margin-bottom:20px}
-.tags-grid{display:flex;flex-wrap:wrap;gap:9px}
-.tag{padding:10px 16px;border-radius:100px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.55);font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:7px;font-family:var(--f-b)}
-.tag.on{background:rgba(124,58,237,.22);border-color:rgba(124,58,237,.6);color:#c4b5fd}
-.budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.budget-tag{padding:13px 8px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-size:12.5px;font-weight:700;cursor:pointer;transition:all .18s;text-align:center;font-family:var(--f-h)}
-.budget-tag.on{background:rgba(124,58,237,.22);border-color:rgba(124,58,237,.6);color:#c4b5fd}
-.city-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
-.city-tag{padding:13px 6px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-size:11.5px;font-weight:700;cursor:pointer;transition:all .18s;text-align:center;font-family:var(--f-b)}
-.city-tag.on{background:rgba(124,58,237,.22);border-color:rgba(124,58,237,.6);color:#c4b5fd}
-.city-emoji{display:block;font-size:22px;margin-bottom:4px}
-.prefs-footer{padding:13px 20px max(env(safe-area-inset-bottom),14px);background:rgba(5,3,16,.92);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+#screen-prefs{background:linear-gradient(165deg,#050310,#100828)}
+.prefs-hd{background:rgba(5,3,16,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(124,58,237,.15);padding:max(env(safe-area-inset-top,0px),16px) 20px 14px;flex-shrink:0}
+.pbar-track{height:3px;background:rgba(255,255,255,.1);border-radius:3px;margin-bottom:12px;overflow:hidden}
+.pbar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#2563eb);border-radius:3px;transition:width .4s}
+.pbar-meta{display:flex;justify-content:space-between;align-items:center}
+.pbar-lbl{font-size:12px;color:rgba(255,255,255,.4);font-weight:600}
+.pbar-skip{background:none;border:none;font-size:12px;color:rgba(255,255,255,.28);cursor:pointer;font-family:var(--f-b)}
+.prefs-body{flex:1;overflow-y:auto;padding:22px 20px 8px;-webkit-overflow-scrolling:touch}
+.prefs-body::-webkit-scrollbar{display:none}
+.pq{font-family:var(--f-h);font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:5px}
+.ps{font-size:13px;color:rgba(255,255,255,.35);margin-bottom:20px;line-height:1.6}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:10px 15px;border-radius:100px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--f-b);transition:all .15s}
+.tag.on,.tag:active{background:rgba(124,58,237,.25);border-color:rgba(124,58,237,.6);color:#c4b5fd}
+.budget-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btag{padding:13px 8px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);font-size:12px;font-weight:700;cursor:pointer;text-align:center;font-family:var(--f-h);transition:all .15s}
+.btag.on,.btag:active{background:rgba(124,58,237,.25);border-color:rgba(124,58,237,.6);color:#c4b5fd}
+.city-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ctag{padding:13px 6px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.ctag.on,.ctag:active{background:rgba(124,58,237,.25);border-color:rgba(124,58,237,.6);color:#c4b5fd}
+.ctag-emo{display:block;font-size:22px;margin-bottom:4px}
+.prefs-ft{padding:14px 20px max(env(safe-area-inset-bottom,0px),14px);background:rgba(5,3,16,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
 .prefs-nav{display:flex;gap:10px}
-.btn-back{flex:0 0 50px;height:50px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;color:rgba(255,255,255,.5);font-size:20px;cursor:pointer}
-.btn-next{flex:1;height:50px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--f-h)}
+.btn-back{width:48px;height:48px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;color:rgba(255,255,255,.5);font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--f-b)}
+.btn-back:active{background:rgba(255,255,255,.14)}
+.btn-next{flex:1;height:48px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--f-h);letter-spacing:.3px}
+.btn-next:active{transform:scale(.98)}
 
 /* SWIPE */
-#screen-swipe{background:#F4F2FA}
-.sw-nav{background:#fff;border-bottom:1px solid var(--border);padding:max(env(safe-area-inset-top),10px) 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10}
-.sw-nav-left{display:flex;align-items:center;gap:10px}
-.sw-logo-img{height:26px;object-fit:contain}
-.sw-logo-txt{font-family:var(--f-h);font-size:20px;font-weight:900;color:var(--text)}
-.sw-logo-txt span{background:linear-gradient(90deg,#7C3AED,#2563EB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.sw-right{display:flex;gap:8px}
-.sw-btn-prefs{background:var(--brand-pale);border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--brand);cursor:pointer;font-family:var(--f-b)}
-.sw-btn-wl{background:transparent;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:16px;cursor:pointer}
-.deck-area{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:10px 10px 6px}
-.sw-hint{font-size:11px;color:var(--muted);text-align:center;padding:5px 16px;flex-shrink:0}
-.act-bar{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 16px max(env(safe-area-inset-bottom),12px);background:#fff;border-top:1px solid var(--border);flex-shrink:0}
-.act-btn{border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;flex-shrink:0}
-.act-btn:active{transform:scale(.88)}
-.act-nope{width:56px;height:56px;background:#FEE2E2;font-size:22px}
-.act-info{width:42px;height:42px;background:#EDE8F5;font-size:16px}
-.act-like{width:56px;height:56px;background:#DCFCE7;font-size:22px}
-.act-enq{flex:1;max-width:130px;height:48px;background:linear-gradient(135deg,#7c3aed,#2563eb);border-radius:100px;color:#fff;font-size:13px;font-weight:800;font-family:var(--f-h);border:none;cursor:pointer}
+#screen-swipe{background:#EDE8F5}
+.snav{background:#fff;border-bottom:1px solid var(--border);padding:max(env(safe-area-inset-top,0px),12px) 14px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10}
+.snav-logo{display:flex;align-items:center;gap:8px}
+.snav-img{height:28px;width:auto}
+.snav-fb{font-family:var(--f-h);font-size:20px;font-weight:900;color:var(--text)}
+.snav-fb span{background:linear-gradient(90deg,#7C3AED,#2563EB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.snav-r{display:flex;gap:8px}
+.np{padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:var(--f-b)}
+.np-pref{background:var(--brand-pale);color:var(--brand)}
+.np-wl{background:#fff;border:1.5px solid var(--border);color:var(--muted)}
+.deck{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:12px 12px 4px}
+.no-cards{text-align:center;padding:32px 20px;display:none}
+.no-cards-ico{font-size:48px;margin-bottom:12px}
+.no-cards-h{font-family:var(--f-h);font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px}
+.no-cards-s{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6}
+.card{position:absolute;width:calc(100% - 24px);max-width:390px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12);cursor:grab;user-select:none;transform-origin:50% 100%;touch-action:none}
+.card.is-top{z-index:3}
+.card:not(.is-top):nth-child(2){transform:scale(.96) translateY(10px);z-index:2}
+.card:not(.is-top):nth-child(3){transform:scale(.93) translateY(20px);z-index:1}
+.card.anim{transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .35s}
+.card.fly-r{transform:translateX(140%) rotate(28deg)!important;opacity:0!important}
+.card.fly-l{transform:translateX(-140%) rotate(-28deg)!important;opacity:0!important}
+.cimg{height:min(56vw,300px);position:relative;overflow:hidden;background:#ddd6f3}
+.cimg img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.cimg-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,#EDE8F5,#ddd6f3)}
+.cgrad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7),rgba(0,0,0,.1) 50%,transparent 70%)}
+.cbadges{position:absolute;bottom:0;left:0;right:0;padding:10px 10px 0;display:flex;gap:6px}
+.cbadge{padding:3px 10px;border-radius:100px;font-size:10px;font-weight:800;color:#fff}
+.cb-sale{background:rgba(124,58,237,.9)}.cb-rent{background:rgba(15,23,42,.85)}.cb-pg{background:linear-gradient(135deg,rgba(124,58,237,.9),rgba(37,99,235,.9))}.cb-lease{background:rgba(30,64,175,.9)}.cb-zero{background:rgba(22,163,74,.85);font-size:9.5px}
+.ind-like{position:absolute;top:18px;left:14px;background:#16a34a;color:#fff;font-size:14px;font-weight:900;padding:6px 13px;border-radius:8px;letter-spacing:1px;opacity:0;transform:rotate(-15deg);border:3px solid #fff;pointer-events:none;z-index:10}
+.ind-nope{position:absolute;top:18px;right:14px;background:#dc2626;color:#fff;font-size:14px;font-weight:900;padding:6px 13px;border-radius:8px;letter-spacing:1px;opacity:0;transform:rotate(15deg);border:3px solid #fff;pointer-events:none;z-index:10}
+.cbody{padding:12px 13px 13px}
+.cprice{font-family:var(--f-h);font-size:21px;font-weight:900;color:var(--text);letter-spacing:-.5px;line-height:1}
+.ctitle{font-size:13px;font-weight:600;color:var(--text);margin:5px 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cloc{font-size:11.5px;color:var(--muted);margin-bottom:8px}
+.cfood{display:inline-flex;align-items:center;gap:4px;background:#FEF3C7;border:1px solid #FDE68A;color:#92400E;font-size:10px;font-weight:800;padding:3px 9px;border-radius:100px;margin-bottom:6px}
+.cams{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
+.cam{background:#F4F2FA;color:var(--muted);font-size:10px;font-weight:600;padding:3px 8px;border-radius:100px}
+.cspecs{display:flex;gap:10px;font-size:11px;color:var(--muted);padding-top:8px;border-top:1.5px solid var(--border);flex-wrap:wrap}
+.swipe-hint{font-size:11px;color:var(--muted);text-align:center;padding:4px 16px;flex-shrink:0;background:#EDE8F5}
+.actbar{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 16px max(env(safe-area-inset-bottom,0px),14px);background:#fff;border-top:1px solid var(--border);flex-shrink:0}
+.act{border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.act:active{transform:scale(.88)}
+.act-no{width:58px;height:58px;background:#FEE2E2;font-size:24px;box-shadow:0 3px 10px rgba(220,38,38,.15)}
+.act-inf{width:42px;height:42px;background:#EDE8F5;font-size:17px}
+.act-enq{flex:1;max-width:130px;height:48px;background:linear-gradient(135deg,#7c3aed,#2563eb);border-radius:100px;color:#fff;font-size:13px;font-weight:800;font-family:var(--f-h);box-shadow:0 4px 14px rgba(124,58,237,.35)}
+.act-yes{width:58px;height:58px;background:#DCFCE7;font-size:24px;box-shadow:0 3px 10px rgba(22,163,74,.15)}
+.btmnav{display:flex;background:#fff;border-top:1.5px solid var(--border);flex-shrink:0}
+.btmbtn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px max(env(safe-area-inset-bottom,0px),10px);cursor:pointer;border:none;background:none;font-size:9.5px;font-weight:700;color:var(--muted);gap:3px;font-family:var(--f-b)}
+.btmbtn.on{color:var(--brand)}
+.btmico{font-size:22px;line-height:1}
 
-/* CARDS */
-.swipe-card{position:absolute;width:calc(100% - 20px);max-width:390px;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 8px 36px rgba(0,0,0,.13);cursor:grab;user-select:none;transform-origin:bottom center;will-change:transform}
-.swipe-card.snap-back{transition:transform .32s cubic-bezier(.4,0,.2,1)}
-.swipe-card:nth-child(2){transform:scale(.96) translateY(9px)}
-.swipe-card:nth-child(3){transform:scale(.92) translateY(18px)}
-.swipe-card.fly-r{transition:transform .38s cubic-bezier(.4,0,.2,1),opacity .3s!important;transform:translateX(135%) rotate(25deg)!important;opacity:0!important}
-.swipe-card.fly-l{transition:transform .38s cubic-bezier(.4,0,.2,1),opacity .3s!important;transform:translateX(-135%) rotate(-25deg)!important;opacity:0!important}
-.c-img{height:55vw;max-height:340px;position:relative;overflow:hidden;background:#e9e6f0}
-.c-img img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-.c-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,#EDE8F5,#ddd8f0)}
-.c-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 55%)}
-.c-img-foot{position:absolute;bottom:0;left:0;right:0;padding:11px 13px;display:flex;justify-content:space-between;align-items:flex-end}
-.c-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:100px;font-size:10.5px;font-weight:800;color:#fff}
-.cb-s{background:rgba(124,58,237,.85)} .cb-r{background:rgba(15,23,42,.85)}
-.cb-p{background:linear-gradient(135deg,rgba(124,58,237,.85),rgba(37,99,235,.85))} .cb-l{background:rgba(30,64,175,.85)}
-.c-zero{font-size:9.5px;font-weight:800;color:rgba(255,255,255,.7)}
-.c-li,.c-no{position:absolute;top:20px;font-size:14px;font-weight:900;padding:6px 13px;border-radius:8px;letter-spacing:1.5px;opacity:0;pointer-events:none;border:2.5px solid #fff}
-.c-li{left:16px;background:#16a34a;color:#fff;transform:rotate(-12deg)}
-.c-no{right:16px;background:#dc2626;color:#fff;transform:rotate(12deg)}
-.c-body{padding:12px 14px 14px}
-.c-price{font-family:var(--f-h);font-size:21px;font-weight:900;color:var(--text);letter-spacing:-.5px;line-height:1}
-.c-title{font-size:13px;font-weight:600;color:var(--text);margin:4px 0 2px;line-height:1.35}
-.c-loc{font-size:11.5px;color:var(--muted);margin-bottom:8px}
-.food-pill{display:inline-flex;align-items:center;gap:4px;background:#FEF3C7;border:1px solid #FDE68A;color:#92400E;font-size:10px;font-weight:800;padding:3px 9px;border-radius:100px;margin-bottom:7px}
-.c-ams{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
-.c-am{background:#F4F2FA;color:var(--muted);font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:100px}
-.c-specs{display:flex;gap:10px;font-size:11.5px;color:var(--muted);padding-top:8px;border-top:1.5px solid var(--border);flex-wrap:wrap}
-.deck-empty{text-align:center;padding:40px 20px;color:var(--muted)}
-
-/* BOTTOM NAV */
-.bottom-nav{display:flex;background:#fff;border-top:1.5px solid var(--border);flex-shrink:0}
-.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px max(env(safe-area-inset-bottom),7px);cursor:pointer;color:var(--muted);font-size:9.5px;font-weight:700;gap:3px;border:none;background:none;font-family:var(--f-b);transition:color .15s}
-.bn.on{color:var(--brand)}
-.bn-ico{font-size:20px;line-height:1}
-
-/* WATCHLIST */
-#screen-watchlist{background:#F4F2FA;flex-direction:column}
-.wl-hdr{background:#fff;padding:max(env(safe-area-inset-top),14px) 20px 13px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+/* WL */
+#screen-wl{background:#F4F2FA}
+.wl-hd{background:#fff;padding:max(env(safe-area-inset-top,0px),16px) 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
 .wl-title{font-family:var(--f-h);font-size:18px;font-weight:800;color:var(--text)}
-.wl-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted)}
-.wl-list{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:9px;-webkit-overflow-scrolling:touch}
-.wl-card{background:#fff;border-radius:13px;overflow:hidden;border:1.5px solid var(--border);display:flex}
-.wl-img{width:85px;height:76px;object-fit:cover;flex-shrink:0}
-.wl-img-ph{width:85px;height:76px;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--brand-pale);flex-shrink:0}
-.wl-body{padding:9px 10px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
-.wl-price{font-family:var(--f-h);font-size:13.5px;font-weight:800;color:var(--brand)}
-.wl-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.wl-loc{font-size:10.5px;color:var(--muted);margin-top:2px}
-.wl-chat{margin:6px 11px 6px 0;padding:7px 13px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;border-radius:100px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--f-h);flex-shrink:0;align-self:center}
+.wl-x{background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted)}
+.wl-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.wlcard{background:#fff;border-radius:13px;overflow:hidden;border:1.5px solid var(--border);display:flex;align-items:stretch}
+.wlimg{width:88px;height:78px;object-fit:cover;flex-shrink:0;display:block}
+.wlph{width:88px;height:78px;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--brand-pale);flex-shrink:0}
+.wlbody{padding:10px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.wlprice{font-family:var(--f-h);font-size:14px;font-weight:800;color:var(--brand)}
+.wlname{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wlloc{font-size:10.5px;color:var(--muted)}
+.wlenq{margin:8px 10px 8px 0;padding:7px 13px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;border-radius:100px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--f-h);flex-shrink:0;align-self:center}
 
 /* PROFILE */
-#screen-profile{background:linear-gradient(165deg,#050310,#100828);flex-direction:column}
-.prof-scroll{flex:1;overflow-y:auto;padding:max(env(safe-area-inset-top),44px) 20px 20px;-webkit-overflow-scrolling:touch}
-.prof-av{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:10px}
-.prof-name{font-family:var(--f-h);font-size:20px;font-weight:900;color:#fff;margin-bottom:3px}
-.prof-phone{font-size:13px;color:rgba(255,255,255,.35);margin-bottom:20px}
-.pstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:22px}
-.pstat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 7px;text-align:center}
-.pstat-n{font-family:var(--f-h);font-size:21px;font-weight:900;color:#a78bfa}
-.pstat-l{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
-.prof-sec{font-size:10.5px;font-weight:800;color:rgba(255,255,255,.25);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:9px}
-.pchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
-.pchip{padding:6px 12px;background:rgba(124,58,237,.16);border:1px solid rgba(124,58,237,.28);border-radius:100px;font-size:12px;font-weight:600;color:#c4b5fd}
-.btn-edit{width:100%;padding:13px;background:rgba(124,58,237,.15);border:1.5px solid rgba(124,58,237,.28);border-radius:12px;color:#c4b5fd;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--f-h);margin-bottom:9px}
-.btn-logout{width:100%;padding:12px;background:rgba(220,38,38,.08);border:1.5px solid rgba(220,38,38,.16);border-radius:12px;color:#fca5a5;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--f-b)}
+#screen-profile{background:linear-gradient(165deg,var(--dark),#100828)}
+.pf-scroll{flex:1;overflow-y:auto;padding:max(env(safe-area-inset-top,0px),40px) 20px 20px}
+.pf-ava{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:10px}
+.pf-name{font-family:var(--f-h);font-size:22px;font-weight:900;color:#fff;margin-bottom:2px}
+.pf-phone{font-size:13px;color:rgba(255,255,255,.35);margin-bottom:22px}
+.pfstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.pfstat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 8px;text-align:center}
+.pfstat-n{font-family:var(--f-h);font-size:22px;font-weight:900;color:#a78bfa}
+.pfstat-l{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.pf-sec{font-size:11px;font-weight:800;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+.pchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.pchip{padding:5px 12px;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.3);border-radius:100px;font-size:12px;font-weight:600;color:#c4b5fd}
+.btn-edit{display:block;width:100%;padding:13px;background:rgba(124,58,237,.15);border:1.5px solid rgba(124,58,237,.3);border-radius:12px;color:#c4b5fd;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--f-h);margin-bottom:10px}
+.btn-out{display:block;width:100%;padding:12px;background:rgba(220,38,38,.08);border:1.5px solid rgba(220,38,38,.18);border-radius:12px;color:#fca5a5;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--f-b)}
 
-/* DETAIL */
-.detail-sheet{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.55);display:none;align-items:flex-end}
-.detail-sheet.show{display:flex}
-.detail-inner{background:#fff;border-radius:22px 22px 0 0;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:max(env(safe-area-inset-bottom),20px)}
-.d-handle{width:38px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
-.d-img{width:100%;height:210px;object-fit:cover}
-.d-body{padding:16px 20px}
+/* DETAIL SHEET */
+.sheet-wrap{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);display:none;align-items:flex-end}
+.sheet-wrap.on{display:flex}
+.sheet-box{background:#fff;border-radius:22px 22px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding-bottom:max(env(safe-area-inset-bottom,0px),20px)}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto}
+.sheet-img{width:100%;height:220px;object-fit:cover;display:block}
+.sheet-body{padding:16px 20px}
 
 /* LOADER */
-.ld-wrap{position:fixed;inset:0;background:var(--dark);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
-.ld-wrap.gone{display:none}
-.ld-logo{font-family:var(--f-h);font-size:28px;font-weight:900;color:#fff}
-.ld-logo span{background:linear-gradient(90deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.ld-dots{display:flex;gap:7px}
-.ld-dot{width:8px;height:8px;border-radius:50%;background:#7c3aed;animation:ldp 1.2s ease infinite}
-.ld-dot:nth-child(2){animation-delay:.15s} .ld-dot:nth-child(3){animation-delay:.3s}
-@keyframes ldp{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+.loader{position:fixed;inset:0;background:var(--dark);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;transition:opacity .4s}
+.loader.gone{opacity:0;pointer-events:none}
+.loader-logo{font-family:var(--f-h);font-size:30px;font-weight:900;color:#fff}
+.loader-logo span{background:linear-gradient(90deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.dots{display:flex;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:#7c3aed;animation:dp 1.2s ease infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,100%{opacity:.3;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
 
-/* TOAST */
-.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(10px);bottom:calc(max(env(safe-area-inset-bottom),0px) + 74px);background:rgba(26,16,53,.96);color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:600;z-index:300;opacity:0;transition:all .28s;white-space:nowrap;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(16px);bottom:calc(max(env(safe-area-inset-bottom,0px),0px) + 76px);background:rgba(26,16,53,.95);color:#fff;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:400;opacity:0;transition:all .28s;white-space:nowrap;max-width:calc(100vw - 40px);pointer-events:none;border:1px solid rgba(124,58,237,.3)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
-<div class="ld-wrap" id="ld">
-  <div class="ld-logo">wo<span>door</span></div>
-  <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <img src="http://wodoor.com/wp-content/uploads/2026/03/wodoor-white.png" id="loader-img" style="height:40px;filter:brightness(0) invert(1)" onerror="this.style.display='none';document.getElementById('loader-logo').style.display='block'">
+  <div class="loader-logo" id="loader-logo" style="display:none">wo<span>door</span></div>
+  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
 </div>
 
-<!-- STEP 1: PHONE -->
-<div class="screen active" id="screen-phone">
-  <div class="ph-inner">
-    <div class="auth-nav">
-      <img src="http://wodoor.com/wp-content/uploads/2026/03/wodoor-white.png" class="auth-nav-logo" alt="Wodoor" id="ph-logo-img" onerror="this.style.display='none';document.getElementById('ph-logo-fb').style.display='block'">
-      <div id="ph-logo-fb" style="display:none;font-family:var(--f-h);font-size:20px;font-weight:900;color:#fff">wo<span style="background:linear-gradient(90deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">door</span></div>
-      <div class="auth-nav-tag">World's Smartest<br><em>Property Finder</em></div>
-    </div>
-    <div class="auth-eyebrow"><div class="auth-eyebrow-dot"></div>India's Free Property App</div>
-    <div class="auth-h1">Swipe your way<br>to your <em>dream home.</em></div>
-    <div class="auth-sub">Verify with WhatsApp. Set your preferences. Swipe through properties curated just for you.</div>
-    <div class="auth-card">
-      <div class="auth-lbl">Your mobile number</div>
-      <div class="phone-row">
-        <div class="phone-flag"><span>🇮🇳</span><span class="phone-prefix">+91</span></div>
-        <input class="phone-inp" type="tel" id="ph-inp" placeholder="98765 43210" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')authSend()">
-      </div>
-      <div class="auth-err" id="ph-err"></div>
-      <button class="btn-wa" id="ph-btn" onclick="authSend()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Send OTP via WhatsApp
-      </button>
-    </div>
+<!-- AUTH SCREEN -->
+<div class="screen active" id="screen-auth">
+ <div class="auth-scroll">
+  <div class="auth-logo-row">
+   <img class="auth-logo-img" src="http://wodoor.com/wp-content/uploads/2026/03/wodoor-white.png" alt="Wodoor"
+    onerror="this.style.display='none';document.getElementById('auth-fb').style.display='block'">
+   <div id="auth-fb" style="display:none" class="auth-logo-fb">wo<span>door</span></div>
   </div>
-</div>
-
-<!-- STEP 2: OTP + NAME -->
-<div class="screen" id="screen-otp">
-  <div class="otp-inner">
-    <button class="otp-back" onclick="goBackToPhone()">← Change number</button>
-    <div class="otp-sent-badge">
-      <span style="font-size:22px">💬</span>
-      <div>
-        <span class="otp-sent-phone" id="otp-phone-disp">+91 XXXXXXXXXX</span>
-        <span class="otp-sent-txt">OTP sent on WhatsApp. Check your messages.</span>
-      </div>
-    </div>
-    <div class="otp-h">Enter your OTP</div>
-    <div class="otp-sub">Also share your name so sellers know who's interested</div>
-    <div class="auth-lbl">Your name</div>
-    <input class="otp-name-inp" type="text" id="otp-name" placeholder="e.g. Rahul Sharma" autocomplete="name" onkeydown="if(event.key==='Enter')document.getElementById('otp-0').focus()">
-    <div class="auth-lbl">4-digit OTP from WhatsApp</div>
-    <div class="otp-boxes">
-      <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" id="otp-0" oninput="otpIn(this,0)" onkeydown="otpKey(event,0)">
-      <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" id="otp-1" oninput="otpIn(this,1)" onkeydown="otpKey(event,1)">
-      <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" id="otp-2" oninput="otpIn(this,2)" onkeydown="otpKey(event,2)">
-      <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" id="otp-3" oninput="otpIn(this,3)" onkeydown="otpKey(event,3)">
-    </div>
-    <div class="otp-resend">Didn't get it? <button onclick="resendOTP()">Resend OTP</button></div>
-    <div class="otp-err" id="otp-err"></div>
-    <button class="btn-verify" id="otp-btn" onclick="authVerify()">Verify & Continue →</button>
+  <div class="auth-tagline-row">World's Smartest Property Finder App</div>
+  <div class="wa-pill">
+   <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+   Verify via WhatsApp — instant &amp; free
   </div>
+  <div class="auth-h1">Swipe your way<br>to your <em>dream home.</em></div>
+  <div class="auth-sub">Set preferences. Discover curated properties. Zero broker, zero commission.</div>
+  <div class="auth-card">
+   <!-- Step: Phone -->
+   <div class="auth-step active" id="step-phone">
+    <div class="flbl">Your mobile number</div>
+    <div class="phone-row">
+     <div class="phone-pfx">&#127470;&#127475; +91</div>
+     <input class="phone-inp" type="tel" id="inp-phone" placeholder="98765 43210" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')">
+    </div>
+    <div class="err-msg" id="err-phone"></div>
+    <button class="btn-main" id="btn-send" onclick="sendOTP()">Get OTP on WhatsApp &rarr;</button>
+   </div>
+   <!-- Step: OTP -->
+   <div class="auth-step" id="step-otp">
+    <div class="flbl">Your name</div>
+    <input class="name-inp" type="text" id="inp-name" placeholder="e.g. Rahul Sharma" autocomplete="name">
+    <div class="flbl">4-digit OTP</div>
+    <div class="otp-grid">
+     <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" id="otp0" oninput="otpIn(0)" onkeydown="otpKey(event,0)">
+     <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" id="otp1" oninput="otpIn(1)" onkeydown="otpKey(event,1)">
+     <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" id="otp2" oninput="otpIn(2)" onkeydown="otpKey(event,2)">
+     <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" id="otp3" oninput="otpIn(3)" onkeydown="otpKey(event,3)">
+    </div>
+    <div class="otp-hint">Sent to <strong id="phone-disp">+91 XXXXXXXXXX</strong> on WhatsApp</div>
+    <div class="err-msg" id="err-otp"></div>
+    <button class="btn-main" id="btn-verify" onclick="verifyOTP()">Verify &amp; Continue &rarr;</button>
+    <button class="btn-ghost" onclick="gotoStep('phone')">&#8592; Change number</button>
+    <div class="resend-row" id="resend-row"></div>
+   </div>
+  </div>
+ </div>
 </div>
 
-<!-- PREFS -->
+<!-- PREFS SCREEN -->
 <div class="screen" id="screen-prefs">
-  <div class="prefs-hdr">
-    <div class="prefs-prog"><div class="prefs-prog-bar" id="prefs-bar" style="width:20%"></div></div>
-    <div class="prefs-nav-row">
-      <div class="prefs-lbl" id="prefs-lbl">Step 1 of 5</div>
-      <button class="prefs-skip" onclick="skipPrefs()">Skip all →</button>
-    </div>
+ <div class="prefs-hd">
+  <div class="pbar-track"><div class="pbar-fill" id="pbar" style="width:20%"></div></div>
+  <div class="pbar-meta">
+   <div class="pbar-lbl" id="pbar-lbl">Step 1 of 5</div>
+   <button class="pbar-skip" onclick="skipAll()">Skip &rarr;</button>
   </div>
-  <div style="flex:1;overflow:hidden;position:relative">
-    <div class="pstep active" id="pstep-1"><div class="pstep-body">
-      <div class="prefs-q">What are you looking for? 🏠</div>
-      <div class="prefs-sub">Select all that apply</div>
-      <div class="tags-grid">
-        <div class="tag" onclick="toggleTag(this,'intent','sale')"><span>💰</span>Buy a home</div>
-        <div class="tag" onclick="toggleTag(this,'intent','rent')"><span>🔑</span>Rent</div>
-        <div class="tag" onclick="toggleTag(this,'intent','pg')"><span>🛏</span>PG / Hostel</div>
-        <div class="tag" onclick="toggleTag(this,'intent','lease')"><span>🏢</span>Commercial</div>
-        <div class="tag" onclick="toggleTag(this,'intent','plot')"><span>📐</span>Plot / Land</div>
-        <div class="tag" onclick="toggleTag(this,'intent','farmhouse')"><span>🏡</span>Farmhouse</div>
-      </div>
-    </div></div>
-    <div class="pstep" id="pstep-2"><div class="pstep-body">
-      <div class="prefs-q">Property type? 🏗</div>
-      <div class="prefs-sub">Pick your preferred types</div>
-      <div class="tags-grid">
-        <div class="tag" onclick="toggleTag(this,'category','apartment')"><span>🏢</span>Apartment</div>
-        <div class="tag" onclick="toggleTag(this,'category','villa')"><span>🏡</span>Villa</div>
-        <div class="tag" onclick="toggleTag(this,'category','independent_house')"><span>🏠</span>Ind. House</div>
-        <div class="tag" onclick="toggleTag(this,'category','penthouse')"><span>🌆</span>Penthouse</div>
-        <div class="tag" onclick="toggleTag(this,'category','studio')"><span>🚪</span>Studio</div>
-        <div class="tag" onclick="toggleTag(this,'category','row_house')"><span>🏘</span>Row House</div>
-        <div class="tag" onclick="toggleTag(this,'category','pg_hostel')"><span>🛏</span>PG / Hostel</div>
-        <div class="tag" onclick="toggleTag(this,'category','co_living')"><span>👥</span>Co-Living</div>
-        <div class="tag" onclick="toggleTag(this,'category','commercial_office')"><span>💼</span>Office</div>
-        <div class="tag" onclick="toggleTag(this,'category','plot')"><span>📐</span>Plot</div>
-        <div class="tag" onclick="toggleTag(this,'category','farmland')"><span>🌾</span>Farmland</div>
-        <div class="tag" onclick="toggleTag(this,'category','farmhouse')"><span>🌿</span>Farmhouse</div>
-      </div>
-    </div></div>
-    <div class="pstep" id="pstep-3"><div class="pstep-body">
-      <div class="prefs-q">BHK preference? 🛏</div>
-      <div class="prefs-sub">Select all you'd consider</div>
-      <div class="tags-grid">
-        <div class="tag" onclick="toggleTag(this,'bhk','1 BHK')"><span>🏠</span>1 BHK</div>
-        <div class="tag" onclick="toggleTag(this,'bhk','1.5 BHK')"><span>🏠</span>1.5 BHK</div>
-        <div class="tag" onclick="toggleTag(this,'bhk','2 BHK')"><span>🏡</span>2 BHK</div>
-        <div class="tag" onclick="toggleTag(this,'bhk','2.5 BHK')"><span>🏡</span>2.5 BHK</div>
-        <div class="tag" onclick="toggleTag(this,'bhk','3 BHK')"><span>🏘</span>3 BHK</div>
-        <div class="tag" onclick="toggleTag(this,'bhk','4 BHK')"><span>🏰</span>4 BHK</div>
-        <div class="tag" onclick="toggleTag(this,'bhk','4+ BHK')"><span>🏰</span>4+ BHK</div>
-        <div class="tag" onclick="toggleTag(this,'bhk','Single Room')"><span>🛏</span>Single Room</div>
-        <div class="tag" onclick="toggleTag(this,'bhk','Studio')"><span>🚪</span>Studio</div>
-      </div>
-    </div></div>
-    <div class="pstep" id="pstep-4"><div class="pstep-body">
-      <div class="prefs-q">Max budget? 💰</div>
-      <div class="prefs-sub">Tap to select</div>
-      <div class="budget-grid">
-        <div class="budget-tag" onclick="selBudget(this,10000)">Below ₹10K</div>
-        <div class="budget-tag" onclick="selBudget(this,20000)">Below ₹20K</div>
-        <div class="budget-tag" onclick="selBudget(this,50000)">Below ₹50K</div>
-        <div class="budget-tag" onclick="selBudget(this,100000)">Below ₹1 Lakh</div>
-        <div class="budget-tag" onclick="selBudget(this,500000)">Below ₹5 Lakh</div>
-        <div class="budget-tag" onclick="selBudget(this,2000000)">Below ₹20 Lakh</div>
-        <div class="budget-tag" onclick="selBudget(this,5000000)">Below ₹50 Lakh</div>
-        <div class="budget-tag" onclick="selBudget(this,10000000)">Below ₹1 Crore</div>
-        <div class="budget-tag" onclick="selBudget(this,20000000)">Below ₹2 Crore</div>
-        <div class="budget-tag" onclick="selBudget(this,50000000)">Below ₹5 Crore</div>
-        <div class="budget-tag" onclick="selBudget(this,100000000)">Below ₹10 Crore</div>
-        <div class="budget-tag" onclick="selBudget(this,200000000)">Below ₹20 Crore</div>
-        <div class="budget-tag" onclick="selBudget(this,500000000)">Below ₹50 Crore</div>
-        <div class="budget-tag" onclick="selBudget(this,1000000000)">Below ₹100 Crore</div>
-        <div class="budget-tag" onclick="selBudget(this,2000000000)">Below ₹200 Crore</div>
-        <div class="budget-tag" onclick="selBudget(this,5000000000)">Below ₹500 Crore</div>
-      </div>
-    </div></div>
-    <div class="pstep" id="pstep-5"><div class="pstep-body">
-      <div class="prefs-q">Which cities? 📍</div>
-      <div class="prefs-sub">We'll prioritise these for you</div>
-      <div class="city-grid">
-        <div class="city-tag" onclick="toggleTag(this,'city','Chennai')"><span class="city-emoji">🌊</span>Chennai</div>
-        <div class="city-tag" onclick="toggleTag(this,'city','Bengaluru')"><span class="city-emoji">🌿</span>Bengaluru</div>
-        <div class="city-tag" onclick="toggleTag(this,'city','Mumbai')"><span class="city-emoji">🏙</span>Mumbai</div>
-        <div class="city-tag" onclick="toggleTag(this,'city','Hyderabad')"><span class="city-emoji">💊</span>Hyderabad</div>
-        <div class="city-tag" onclick="toggleTag(this,'city','Pune')"><span class="city-emoji">🎓</span>Pune</div>
-        <div class="city-tag" onclick="toggleTag(this,'city','Coimbatore')"><span class="city-emoji">🌄</span>Coimbatore</div>
-        <div class="city-tag" onclick="toggleTag(this,'city','Delhi')"><span class="city-emoji">🏛</span>Delhi</div>
-        <div class="city-tag" onclick="toggleTag(this,'city','Kolkata')"><span class="city-emoji">🌉</span>Kolkata</div>
-        <div class="city-tag" onclick="toggleTag(this,'city','Ahmedabad')"><span class="city-emoji">🪁</span>Ahmedabad</div>
-      </div>
-    </div></div>
+ </div>
+ <div class="prefs-body" id="prefs-body"></div>
+ <div class="prefs-ft">
+  <div class="prefs-nav">
+   <button class="btn-back" id="btn-pback" onclick="pBack()">&#8592;</button>
+   <button class="btn-next" id="btn-pnext" onclick="pNext()">Continue &rarr;</button>
   </div>
-  <div class="prefs-footer">
-    <div class="prefs-nav">
-      <button class="btn-back" id="prefs-back-btn" onclick="prefsBack()">←</button>
-      <button class="btn-next" id="prefs-next-btn" onclick="prefsNext()">Continue →</button>
-    </div>
-  </div>
+ </div>
 </div>
 
-<!-- SWIPE -->
+<!-- SWIPE SCREEN -->
 <div class="screen" id="screen-swipe">
-  <div class="sw-nav">
-    <div class="sw-nav-left">
-      <img src="http://wodoor.com/wp-content/uploads/2026/03/wodoor-white.png" class="sw-logo-img" alt="Wodoor" style="filter:brightness(0) saturate(100%) invert(27%) sepia(89%) saturate(2134%) hue-rotate(254deg) brightness(86%) contrast(106%)" onerror="this.style.display='none';document.getElementById('sw-logo-fb').style.display='block'">
-      <div id="sw-logo-fb" style="display:none" class="sw-logo-txt">wo<span>door</span></div>
-    </div>
-    <div class="sw-right">
-      <button class="sw-btn-prefs" onclick="showScreen('screen-prefs');prefsStep=1;updPrefsUI()">🎯 Prefs</button>
-      <button class="sw-btn-wl" onclick="switchTab('watchlist')">❤️</button>
-    </div>
+ <div class="snav">
+  <div class="snav-logo">
+   <img class="snav-img" src="http://wodoor.com/wp-content/uploads/2026/03/wodoor-white.png"
+    style="filter:brightness(0) saturate(100%) invert(18%) sepia(92%) saturate(5000%) hue-rotate(255deg) brightness(90%)"
+    onerror="this.style.display='none';document.getElementById('snav-fb').style.display='block'">
+   <div class="snav-fb" id="snav-fb" style="display:none">wo<span>door</span></div>
   </div>
-  <div class="deck-area" id="deck-area">
-    <div class="deck-empty" id="deck-empty" style="display:none">
-      <div style="font-size:48px;margin-bottom:12px">🎉</div>
-      <div style="font-family:var(--f-h);font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px">All caught up!</div>
-      <div style="font-size:13px;margin-bottom:18px">New listings added daily. Adjust your preferences or come back tomorrow.</div>
-      <button onclick="reloadDeck()" style="padding:12px 26px;background:var(--brand);color:#fff;border:none;border-radius:100px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--f-h)">🔄 Reload</button>
-    </div>
+  <div class="snav-r">
+   <button class="np np-pref" onclick="openPrefsEdit()">&#127919; Filters</button>
+   <button class="np np-wl" onclick="tab('wl')">&#10084; <span id="wl-badge">0</span></button>
   </div>
-  <div class="sw-hint" id="sw-hint">← Swipe left to skip &nbsp;·&nbsp; Swipe right to save ❤️</div>
-  <div class="act-bar">
-    <button class="act-btn act-nope" onclick="doSwipe('left')">✕</button>
-    <button class="act-btn act-info" onclick="detailTop()">📋</button>
-    <button class="act-btn act-enq" onclick="enquireTop()">💬 Enquire</button>
-    <button class="act-btn act-like" onclick="doSwipe('right')">♥</button>
+ </div>
+ <div class="deck" id="deck">
+  <div class="no-cards" id="no-cards">
+   <div class="no-cards-ico">&#127881;</div>
+   <div class="no-cards-h">You've seen it all!</div>
+   <div class="no-cards-s">New listings added daily. Adjust filters or check back tomorrow.</div>
+   <button onclick="reloadDeck()" style="padding:12px 28px;background:var(--brand);color:#fff;border:none;border-radius:100px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--f-h)">&#128260; Reload</button>
   </div>
-  <div class="bottom-nav">
-    <button class="bn on" id="bn-swipe" onclick="switchTab('swipe')"><div class="bn-ico">🏠</div>Discover</button>
-    <button class="bn" id="bn-watchlist" onclick="switchTab('watchlist')"><div class="bn-ico">❤️</div>Saved</button>
-    <button class="bn" id="bn-profile" onclick="switchTab('profile')"><div class="bn-ico">👤</div>Profile</button>
-  </div>
+ </div>
+ <div class="swipe-hint" id="shint">&#8592; Skip &nbsp;&middot;&nbsp; &#10084; Save &rarr;</div>
+ <div class="actbar">
+  <button class="act act-no" onclick="doSwipe('left')">&#10005;</button>
+  <button class="act act-inf" onclick="showDetail()">&#128203;</button>
+  <button class="act act-enq" onclick="doEnquire()">&#128172; Enquire</button>
+  <button class="act act-yes" onclick="doSwipe('right')">&#9829;</button>
+ </div>
+ <div class="btmnav">
+  <button class="btmbtn on" id="tab-swipe" onclick="tab('swipe')"><div class="btmico">&#127968;</div>Discover</button>
+  <button class="btmbtn" id="tab-wl" onclick="tab('wl')"><div class="btmico">&#10084;</div>Saved</button>
+  <button class="btmbtn" id="tab-profile" onclick="tab('profile')"><div class="btmico">&#128100;</div>Profile</button>
+ </div>
 </div>
 
-<!-- WATCHLIST -->
-<div class="screen" id="screen-watchlist">
-  <div class="wl-hdr">
-    <div>
-      <div class="wl-title">❤️ Saved</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px" id="wl-count">0 listings</div>
-    </div>
-    <button class="wl-close" onclick="switchTab('swipe')">×</button>
-  </div>
-  <div class="wl-list" id="wl-list"></div>
-  <div class="bottom-nav">
-    <button class="bn" onclick="switchTab('swipe')"><div class="bn-ico">🏠</div>Discover</button>
-    <button class="bn on" onclick="switchTab('watchlist')"><div class="bn-ico">❤️</div>Saved</button>
-    <button class="bn" onclick="switchTab('profile')"><div class="bn-ico">👤</div>Profile</button>
-  </div>
+<!-- WATCHLIST SCREEN -->
+<div class="screen" id="screen-wl">
+ <div class="wl-hd">
+  <div><div class="wl-title">&#10084; Saved</div><div style="font-size:11px;color:var(--muted);margin-top:1px" id="wl-sub">0 listings</div></div>
+  <button class="wl-x" onclick="tab('swipe')">&#215;</button>
+ </div>
+ <div class="wl-list" id="wl-list"></div>
+ <div class="btmnav">
+  <button class="btmbtn" onclick="tab('swipe')"><div class="btmico">&#127968;</div>Discover</button>
+  <button class="btmbtn on" onclick="tab('wl')"><div class="btmico">&#10084;</div>Saved</button>
+  <button class="btmbtn" onclick="tab('profile')"><div class="btmico">&#128100;</div>Profile</button>
+ </div>
 </div>
 
-<!-- PROFILE -->
+<!-- PROFILE SCREEN -->
 <div class="screen" id="screen-profile">
-  <div class="prof-scroll">
-    <div class="prof-av">👤</div>
-    <div class="prof-name" id="prof-name">—</div>
-    <div class="prof-phone" id="prof-phone">—</div>
-    <div class="pstat-row">
-      <div class="pstat"><div class="pstat-n" id="ps-seen">0</div><div class="pstat-l">Seen</div></div>
-      <div class="pstat"><div class="pstat-n" id="ps-saved">0</div><div class="pstat-l">Saved</div></div>
-      <div class="pstat"><div class="pstat-n" id="ps-enq">0</div><div class="pstat-l">Enquired</div></div>
-    </div>
-    <div class="prof-sec">Your Preferences</div>
-    <div class="pchips" id="prof-prefs"></div>
-    <button onclick="showScreen('screen-prefs');prefsStep=1;updPrefsUI()" class="btn-edit">✏️ Edit Preferences</button>
-    <button onclick="doLogout()" class="btn-logout">Sign Out</button>
+ <div class="pf-scroll">
+  <div class="pf-ava">&#128100;</div>
+  <div class="pf-name" id="pf-name">—</div>
+  <div class="pf-phone" id="pf-phone">—</div>
+  <div class="pfstats">
+   <div class="pfstat"><div class="pfstat-n" id="pf-seen">0</div><div class="pfstat-l">Seen</div></div>
+   <div class="pfstat"><div class="pfstat-n" id="pf-saved">0</div><div class="pfstat-l">Saved</div></div>
+   <div class="pfstat"><div class="pfstat-n" id="pf-enq">0</div><div class="pfstat-l">Enquired</div></div>
   </div>
-  <div class="bottom-nav">
-    <button class="bn" onclick="switchTab('swipe')"><div class="bn-ico">🏠</div>Discover</button>
-    <button class="bn" onclick="switchTab('watchlist')"><div class="bn-ico">❤️</div>Saved</button>
-    <button class="bn on" onclick="switchTab('profile')"><div class="bn-ico">👤</div>Profile</button>
-  </div>
+  <div class="pf-sec">Your Preferences</div>
+  <div class="pchips" id="pf-chips"></div>
+  <button class="btn-edit" onclick="openPrefsEdit()">&#9998; Edit Preferences</button>
+  <button class="btn-out" onclick="logout()">Sign Out</button>
+ </div>
+ <div class="btmnav">
+  <button class="btmbtn" onclick="tab('swipe')"><div class="btmico">&#127968;</div>Discover</button>
+  <button class="btmbtn" onclick="tab('wl')"><div class="btmico">&#10084;</div>Saved</button>
+  <button class="btmbtn on" onclick="tab('profile')"><div class="btmico">&#128100;</div>Profile</button>
+ </div>
 </div>
 
-<!-- DETAIL -->
-<div class="detail-sheet" id="detail-sheet" onclick="if(event.target===this)closeDetail()">
-  <div class="detail-inner"><div class="d-handle"></div><div id="d-content"></div></div>
+<!-- DETAIL SHEET -->
+<div class="sheet-wrap" id="sheet-wrap" onclick="if(event.target===this)closeSheet()">
+ <div class="sheet-box">
+  <div class="sheet-handle"></div>
+  <div id="sheet-content"></div>
+ </div>
 </div>
-<div class="toast" id="tst"></div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 const SUPA='https://ultfiieoqalvuptdlghr.supabase.co';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsdGZpaWVvcWFsdnVwdGRsZ2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3ODY0MTIsImV4cCI6MjA4ODM2MjQxMn0.VoezF7N_38mNTPBS8rZFk4Sin1Ch97xY7236Bcvjxag';
 const WA='919176995170';
+const OTP_URL=SUPA+'/functions/v1/wodoor-otp';
 const AH={'apikey':ANON,'Authorization':'Bearer '+ANON,'Content-Type':'application/json'};
-let buyer=null,listings=[],deckQ=[],sMap={},wl=[],prefs={intent:[],category:[],bhk:[],city:[],budget_max:null},pendingPhone='',prefsStep=1;
+const CI={apartment:'&#127962;',penthouse:'&#127750;',villa:'&#127969;',row_house:'&#127960;',independent_house:'&#127968;',studio:'&#128682;',pg_hostel:'&#128716;',co_living:'&#128101;',guest_house:'&#127976;',service_apt:'&#128718;',commercial_office:'&#128188;',shop:'&#127979;',showroom:'&#128663;',warehouse:'&#127981;',plot:'&#128208;',agricultural:'&#127807;',farmland:'&#127958;',eco_plot:'&#127807;',farmhouse:'&#127969;',pre_launch:'&#127959;'};
+
+let buyer=null,phone='',deckQ=[],SM={},watchlist=[],prefs={intent:[],category:[],bhk:[],city:[],budget_max:null},pStep=1,resendT=null;
 const $=id=>document.getElementById(id);
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id)?.classList.add('active')}
-let tT;function toast(m,d=2400){clearTimeout(tT);const e=$('tst');e.textContent=m;e.classList.add('show');tT=setTimeout(()=>e.classList.remove('show'),d)}
-async function api(path,method='GET',body){const r=await fetch(SUPA+path,{method,headers:body?{...AH,'Prefer':'return=representation'}:AH,...(body?{body:JSON.stringify(body)}:{})});return r.json()}
-async function otpFn(body){const r=await fetch(SUPA+'/functions/v1/wodoor-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json()}
+const go=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id)&&$(id).classList.add('active')};
+function toast(m,d=2400){const e=$('toast');e.textContent=m;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),d)}
+async function get(t,q=''){return(await fetch(SUPA+'/rest/v1/'+t+q,{headers:AH})).json()}
+async function post(t,b){return(await fetch(SUPA+'/rest/v1/'+t,{method:'POST',headers:{...AH,'Prefer':'return=representation'},body:JSON.stringify(b)})).json()}
+async function patch(t,q,b){await fetch(SUPA+'/rest/v1/'+t+q,{method:'PATCH',headers:{...AH,'Prefer':'return=minimal'},body:JSON.stringify(b)})}
+function fmt(v){if(!v)return'';if(v>=10000000)return'&#8377;'+(v/10000000).toFixed(v%10000000?1:0)+' Cr';if(v>=100000)return'&#8377;'+(v/100000).toFixed(v%100000?1:0)+' L';return'&#8377;'+v}
 
 // AUTH
-async function authSend(){
-  const phone=$('ph-inp').value.trim();
-  if(phone.length!==10){$('ph-err').textContent='Enter a valid 10-digit mobile number';return}
-  $('ph-err').textContent='';pendingPhone='+91'+phone;
-  const btn=$('ph-btn');btn.disabled=true;btn.textContent='⏳ Sending…';
-  const res=await otpFn({action:'send',phone:pendingPhone});
-  btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Send OTP via WhatsApp';
-  if(!res.ok){$('ph-err').textContent=res.error||'Failed to send OTP. Try again.';return}
-  $('otp-phone-disp').textContent=pendingPhone;
-  $('otp-name').value='';[0,1,2,3].forEach(i=>{const b=$('otp-'+i);b.value='';b.classList.remove('filled')});
-  $('otp-err').textContent='';
-  showScreen('screen-otp');
-  setTimeout(()=>$('otp-name').focus(),350);
+function gotoStep(s){document.querySelectorAll('.auth-step').forEach(e=>e.classList.remove('active'));$('step-'+s)&&$('step-'+s).classList.add('active')}
+async function sendOTP(){
+  const p=$('inp-phone').value.trim();
+  if(p.length!==10){$('err-phone').textContent='Enter a valid 10-digit number';return}
+  $('err-phone').textContent='';phone='+91'+p;
+  const btn=$('btn-send');btn.disabled=true;btn.textContent='&#9203; Sending...';
+  try{
+    const r=await fetch(OTP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',phone})});
+    const d=await r.json();
+    if(!d.ok)throw new Error(d.error||'Failed to send OTP');
+    $('phone-disp').textContent=phone;
+    gotoStep('otp');$('inp-name').focus();startResend();
+  }catch(e){$('err-phone').textContent='&#10060; '+e.message}
+  btn.disabled=false;btn.textContent='Get OTP on WhatsApp \u2192';
 }
-async function resendOTP(){
-  if(!pendingPhone){showScreen('screen-phone');return}
-  const res=await otpFn({action:'send',phone:pendingPhone});
-  if(res.ok)toast('✅ New OTP sent to WhatsApp!');else toast('❌ '+(res.error||'Failed'));
+function startResend(){
+  let s=30;clearInterval(resendT);
+  $('resend-row').textContent='Resend in '+s+'s';
+  resendT=setInterval(()=>{s--;if(s<=0){clearInterval(resendT);$('resend-row').innerHTML='<button class="resend-btn" onclick="sendOTP()">Resend OTP</button>';}else $('resend-row').textContent='Resend in '+s+'s';},1000);
 }
-function goBackToPhone(){showScreen('screen-phone')}
-function otpIn(el,idx){
-  el.value=el.value.replace(/\D/g,'').slice(-1);el.classList.toggle('filled',!!el.value);
-  if(el.value&&idx<3)$('otp-'+(idx+1))?.focus();
-  if([0,1,2,3].every(i=>$('otp-'+i)?.value))setTimeout(authVerify,150);
+function otpIn(i){const e=$('otp'+i);e.value=e.value.replace(/\D/g,'').slice(-1);if(e.value&&i<3)$('otp'+(i+1)).focus()}
+function otpKey(ev,i){if(ev.key==='Backspace'&&!$('otp'+i).value&&i>0){ev.preventDefault();$('otp'+(i-1)).focus();$('otp'+(i-1)).value=''}}
+async function verifyOTP(){
+  const name=$('inp-name').value.trim();
+  if(!name){$('err-otp').textContent='Please enter your name';return}
+  const code=[0,1,2,3].map(i=>$('otp'+i)?.value||'').join('');
+  if(code.length<4){$('err-otp').textContent='Enter all 4 digits';return}
+  $('err-otp').textContent='';
+  const btn=$('btn-verify');btn.disabled=true;btn.textContent='&#9203; Verifying...';
+  try{
+    const r=await fetch(OTP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verify',phone,otp:code})});
+    const d=await r.json();
+    if(!d.ok)throw new Error(d.error||'Incorrect OTP');
+    const ex=await get('wo_buyers','?phone=eq.'+encodeURIComponent(phone)+'&limit=1');
+    if(ex?.length){buyer=ex[0];prefs.city=buyer.pref_cities||[];prefs.category=buyer.pref_categories||[];prefs.bhk=buyer.pref_bhk||[];prefs.budget_max=buyer.pref_budget_max||null;localStorage.setItem('wo_b',JSON.stringify(buyer));await loadDeck();}
+    else{const nb=await post('wo_buyers',{name,phone,wa_opted_in:true,wa_opted_in_at:new Date().toISOString()});buyer=Array.isArray(nb)?nb[0]:nb;localStorage.setItem('wo_b',JSON.stringify(buyer));openPrefs();}
+  }catch(e){$('err-otp').textContent='&#10060; '+e.message}
+  btn.disabled=false;btn.textContent='Verify & Continue \u2192';
 }
-function otpKey(e,idx){if(e.key==='Backspace'&&!e.target.value&&idx>0)$('otp-'+(idx-1))?.focus()}
-async function authVerify(){
-  const name=$('otp-name').value.trim();
-  if(!name){$('otp-err').textContent='Please enter your name first';$('otp-name').focus();return}
-  const code=[0,1,2,3].map(i=>$('otp-'+i)?.value||'').join('');
-  if(code.length<4){$('otp-err').textContent='Enter the complete 4-digit OTP';return}
-  $('otp-err').textContent='';
-  const btn=$('otp-btn');btn.disabled=true;btn.textContent='⏳ Verifying…';
-  const res=await otpFn({action:'verify',phone:pendingPhone,code,name});
-  btn.disabled=false;btn.textContent='Verify & Continue →';
-  if(!res.ok){$('otp-err').textContent=res.error||'Verification failed. Try again.';return}
-  buyer=res.buyer;localStorage.setItem('wo_b',JSON.stringify(buyer));
-  prefs.city=buyer.pref_cities||[];prefs.category=buyer.pref_categories||[];
-  prefs.bhk=buyer.pref_bhk||[];prefs.budget_max=buyer.pref_budget_max||null;
-  if(!buyer.total_swipes){prefsStep=1;updPrefsUI();showScreen('screen-prefs');$('ld').classList.add('gone')}
-  else{await loadDeck()}
-}
+function logout(){localStorage.removeItem('wo_b');buyer=null;deckQ=[];SM={};watchlist=[];prefs={intent:[],category:[],bhk:[],city:[],budget_max:null};go('screen-auth');gotoStep('phone')}
 
 // PREFS
-function toggleTag(el,g,v){el.classList.toggle('on');if(!prefs[g])prefs[g]=[];const i=prefs[g].indexOf(v);if(i>=0)prefs[g].splice(i,1);else prefs[g].push(v)}
-function selBudget(el,v){document.querySelectorAll('.budget-tag').forEach(t=>t.classList.remove('on'));el.classList.add('on');prefs.budget_max=v}
-function updPrefsUI(){
-  $('prefs-bar').style.width=(prefsStep/5*100)+'%';
-  $('prefs-lbl').textContent='Step '+prefsStep+' of 5';
-  document.querySelectorAll('.pstep').forEach(s=>s.classList.remove('active'));
-  $('pstep-'+prefsStep)?.classList.add('active');
-  $('prefs-back-btn').style.visibility=prefsStep>1?'visible':'hidden';
-  $('prefs-next-btn').textContent=prefsStep===5?'🏠 Start Discovering!':'Continue →';
+const PS=[
+  {q:'What are you looking for? &#127968;',s:'Select all that apply',type:'tags',k:'intent',it:[{i:'&#128176;',l:'Buy a home',v:'sale'},{i:'&#128273;',l:'Rent a home',v:'rent'},{i:'&#128716;',l:'PG / Hostel',v:'pg'},{i:'&#127962;',l:'Office / Commercial',v:'lease'},{i:'&#128208;',l:'Plot / Land',v:'plot'},{i:'&#127969;',l:'Farmhouse',v:'farmhouse'}]},
+  {q:'What kind of property? &#127959;',s:'Pick your preferred types',type:'tags',k:'category',it:[{i:'&#127962;',l:'Apartment',v:'apartment'},{i:'&#127969;',l:'Villa',v:'villa'},{i:'&#127968;',l:'Independent House',v:'independent_house'},{i:'&#127750;',l:'Penthouse',v:'penthouse'},{i:'&#128682;',l:'Studio',v:'studio'},{i:'&#127960;',l:'Row House',v:'row_house'},{i:'&#128716;',l:'PG / Hostel',v:'pg_hostel'},{i:'&#128101;',l:'Co-Living',v:'co_living'},{i:'&#128188;',l:'Office',v:'commercial_office'},{i:'&#128208;',l:'Plot',v:'plot'},{i:'&#127958;',l:'Farmland',v:'farmland'},{i:'&#127807;',l:'Farmhouse',v:'farmhouse'}]},
+  {q:'How many BHKs? &#128716;',s:'You can select multiple',type:'tags',k:'bhk',it:[{i:'&#127968;',l:'1 BHK',v:'1 BHK'},{i:'&#127968;',l:'1.5 BHK',v:'1.5 BHK'},{i:'&#127969;',l:'2 BHK',v:'2 BHK'},{i:'&#127969;',l:'2.5 BHK',v:'2.5 BHK'},{i:'&#127960;',l:'3 BHK',v:'3 BHK'},{i:'&#127983;',l:'4 BHK',v:'4 BHK'},{i:'&#127983;',l:'4+ BHK',v:'4+ BHK'},{i:'&#128716;',l:'Single Room',v:'Single Room'},{i:'&#128682;',l:'Studio',v:'Studio'}]},
+  {q:"What's your budget? &#128176;",s:'Select your maximum budget',type:'budget',k:'budget_max',it:[{l:'Below \u20b910K',v:10000},{l:'Below \u20b920K',v:20000},{l:'Below \u20b950K',v:50000},{l:'Below \u20b91 Lakh',v:100000},{l:'Below \u20b95 Lakh',v:500000},{l:'Below \u20b920 Lakh',v:2000000},{l:'Below \u20b950 Lakh',v:5000000},{l:'Below \u20b91 Crore',v:10000000},{l:'Below \u20b92 Crore',v:20000000},{l:'Below \u20b95 Crore',v:50000000},{l:'Below \u20b910 Crore',v:100000000},{l:'Below \u20b920 Crore',v:200000000},{l:'Below \u20b950 Crore',v:500000000},{l:'Below \u20b9100 Crore',v:1000000000},{l:'Below \u20b9200 Crore',v:2000000000},{l:'Below \u20b9500 Crore',v:5000000000}]},
+  {q:'Which cities? &#128205;',s:'Properties from these cities first',type:'city',k:'city',it:[{e:'&#127754;',l:'Chennai',v:'Chennai'},{e:'&#127807;',l:'Bengaluru',v:'Bengaluru'},{e:'&#127749;',l:'Mumbai',v:'Mumbai'},{e:'&#128138;',l:'Hyderabad',v:'Hyderabad'},{e:'&#127979;',l:'Pune',v:'Pune'},{e:'&#127748;',l:'Coimbatore',v:'Coimbatore'},{e:'&#127981;',l:'Delhi',v:'Delhi'},{e:'&#127747;',l:'Kolkata',v:'Kolkata'},{e:'&#129666;',l:'Ahmedabad',v:'Ahmedabad'}]}
+];
+const PT=5;
+function openPrefs(){pStep=1;renderPStep();go('screen-prefs')}
+function openPrefsEdit(){pStep=1;renderPStep();go('screen-prefs')}
+function renderPStep(){
+  const s=PS[pStep-1];if(!s)return;
+  $('pbar').style.width=(pStep/PT*100)+'%';
+  $('pbar-lbl').textContent='Step '+pStep+' of '+PT;
+  $('btn-pback').style.visibility=pStep>1?'visible':'hidden';
+  $('btn-pnext').textContent=pStep===PT?'&#127968; Start Discovering!':'Continue \u2192';
+  let h='<div class="pq">'+s.q+'</div><div class="ps">'+s.s+'</div>';
+  if(s.type==='tags'){
+    const sel=prefs[s.k]||[];
+    h+='<div class="tags-wrap">'+s.it.map(it=>{const on=sel.includes(it.v)?'on':'';return'<div class="tag '+on+'" onclick="togTag(this,\''+s.k+'\',\''+it.v+'\')"><span>'+it.i+'</span>'+it.l+'</div>';}).join('')+'</div>';
+  }else if(s.type==='budget'){
+    h+='<div class="budget-wrap">'+s.it.map(it=>{const on=prefs.budget_max===it.v?'on':'';return'<div class="btag '+on+'" onclick="setBudget(this,'+it.v+')">'+it.l+'</div>';}).join('')+'</div>';
+  }else if(s.type==='city'){
+    const sel=prefs.city||[];
+    h+='<div class="city-wrap">'+s.it.map(it=>{const on=sel.includes(it.v)?'on':'';return'<div class="ctag '+on+'" onclick="togTag(this,\'city\',\''+it.v+'\')"><span class="ctag-emo">'+it.e+'</span>'+it.l+'</div>';}).join('')+'</div>';
+  }
+  $('prefs-body').innerHTML=h;
 }
-function prefsNext(){if(prefsStep<5){prefsStep++;updPrefsUI()}else savePrefs()}
-function prefsBack(){if(prefsStep>1){prefsStep--;updPrefsUI()}}
-function skipPrefs(){savePrefs()}
-async function savePrefs(){
-  if(buyer?.id)await api('/rest/v1/wo_buyers?id=eq.'+buyer.id,'PATCH',{pref_categories:prefs.category,pref_bhk:prefs.bhk,pref_cities:prefs.city,pref_budget_max:prefs.budget_max,pref_listing_type:prefs.intent?.[0]||'sale'});
-  await loadDeck()
+function togTag(el,k,v){el.classList.toggle('on');if(!prefs[k])prefs[k]=[];const i=prefs[k].indexOf(v);if(i>=0)prefs[k].splice(i,1);else prefs[k].push(v)}
+function setBudget(el,v){document.querySelectorAll('.btag').forEach(t=>t.classList.remove('on'));el.classList.add('on');prefs.budget_max=v}
+function pBack(){if(pStep>1){pStep--;renderPStep()}}
+function pNext(){if(pStep<PT){pStep++;renderPStep()}else saveAndGo()}
+function skipAll(){saveAndGo()}
+async function saveAndGo(){
+  if(buyer?.id)await patch('wo_buyers','?id=eq.'+buyer.id,{pref_categories:prefs.category,pref_bhk:prefs.bhk,pref_cities:prefs.city,pref_budget_max:prefs.budget_max,pref_listing_type:prefs.intent?.[0]||'sale'});
+  await loadDeck();
 }
 
 // DECK
-const CI={apartment:'🏢',penthouse:'🌆',villa:'🏡',row_house:'🏘',independent_house:'🏠',studio:'🚪',pg_hostel:'🛏',co_living:'👥',guest_house:'🏨',service_apt:'🛎',commercial_office:'💼',shop:'🏪',showroom:'🚗',warehouse:'🏭',plot:'📐',agricultural:'🌱',farmland:'🌾',eco_plot:'🌿',farmhouse:'🏡',pre_launch:'🏗'};
-async function loadDeck(){
-  showScreen('screen-swipe');$('ld').classList.add('gone');
-  let url='/rest/v1/wo_listings?status=eq.active&order=featured.desc,swipe_right_count.desc&limit=100';
+async function loadDeck(){go('screen-swipe');$('loader').classList.add('gone');await fetchL();buildDeck();loadWL();updatePF()}
+async function fetchL(){
+  let url=SUPA+'/rest/v1/wo_listings?status=eq.active&order=featured.desc,swipe_right_count.desc&limit=100';
   if(prefs.city?.length)url+='&city=in.('+prefs.city.join(',')+')';
   if(prefs.budget_max)url+='&price=lte.'+prefs.budget_max;
-  let data=await api(url);
-  if(!Array.isArray(data))data=[];
-  if(prefs.category?.length)data=data.filter(l=>prefs.category.includes(l.category));
-  const seen=JSON.parse(localStorage.getItem('wo_s_'+(buyer?.id||'g'))||'[]');
-  data=data.filter(l=>!seen.includes(l.id));
-  data.forEach(l=>sMap[l.id]=l);deckQ=data.map(l=>l.id);
-  renderDeck();updProf();loadWL();
+  let d=await fetch(url,{headers:AH}).then(r=>r.json());
+  if(!Array.isArray(d))d=[];
+  if(prefs.category?.length)d=d.filter(l=>prefs.category.includes(l.category));
+  const seen=JSON.parse(localStorage.getItem('wo_seen_'+(buyer?.id||'g'))||'[]');
+  d=d.filter(l=>!seen.includes(l.id));
+  d.forEach(l=>SM[l.id]=l);deckQ=d.map(l=>l.id);
 }
-function mkCard(l){
-  const img=l.cover_image_url||(l.image_urls?.[0]);
-  const bc=l.listing_type==='sale'?'cb-s':l.listing_type==='rent'?'cb-r':l.listing_type==='pg'?'cb-p':'cb-l';
+function buildDeck(){
+  const deck=$('deck');deck.querySelectorAll('.card').forEach(c=>c.remove());
+  if(!deckQ.length){$('no-cards').style.display='block';$('shint').style.display='none';return}
+  $('no-cards').style.display='none';$('shint').style.display='block';
+  deckQ.slice(0,3).forEach((id,i)=>{
+    const c=makeCard(SM[id]);
+    if(i===0)c.classList.add('is-top');
+    deck.insertBefore(c,deck.firstChild);
+  });
+  initTouch(deck.querySelector('.card.is-top'));
+}
+function makeCard(l){
+  if(!l)return document.createElement('div');
+  const img=l.cover_image_url||(l.image_urls&&l.image_urls[0]);
+  const bc=l.listing_type==='sale'?'cb-sale':l.listing_type==='rent'?'cb-rent':l.listing_type==='pg'?'cb-pg':'cb-lease';
   const bt=l.listing_type==='sale'?'For Sale':l.listing_type==='rent'?'For Rent':l.listing_type==='pg'?'PG':'Lease';
-  const ams=(l.amenities||[]).slice(0,3).map(a=>'<div class="c-am">'+a+'</div>').join('');
+  const ams=(l.amenities||[]).slice(0,3).map(a=>'<div class="cam">'+a+'</div>').join('');
   const food=(l.amenities||[]).find(a=>/meal|breakfast|dinner|food/i.test(a));
-  const specs=[];
-  if(l.bhk&&l.bhk!=='NULL')specs.push('🛏 '+l.bhk);
-  if(l.area_sqft>0&&l.area_sqft<50000)specs.push('📐 '+l.area_sqft.toLocaleString('en-IN')+' sqft');
-  if(l.rera_number)specs.push('✅ RERA');
-  const d=document.createElement('div');
-  d.className='swipe-card';d.dataset.id=l.id;
-  d.innerHTML='<div class="c-img">'+(img?'<img src="'+img+'" loading="lazy" onerror="this.style.display=\'none\'">'
-    :'<div class="c-img-ph">'+(CI[l.category]||'🏠')+'</div>')
-    +'<div class="c-grad"></div>'
-    +'<div class="c-img-foot"><span class="c-badge '+bc+'">'+bt+'</span><span class="c-zero">✓ Zero Commission</span></div>'
-    +'<div class="c-li" id="li-'+l.id+'">LIKE ❤️</div>'
-    +'<div class="c-no" id="no-'+l.id+'">NOPE ✕</div></div>'
-    +'<div class="c-body">'
-    +'<div class="c-price">'+(l.price_label||'—')+'</div>'
-    +'<div class="c-title">'+l.title+'</div>'
-    +'<div class="c-loc">📍 '+(l.area?l.area+', ':'')+l.city+'</div>'
-    +(food?'<div class="food-pill">🍽 '+food+'</div>':'')
-    +(ams?'<div class="c-ams">'+ams+'</div>':'')
-    +'<div class="c-specs">'+(specs.join(' · ')||'&nbsp;')+'</div></div>';
+  const sp=[];if(l.bhk&&l.bhk!=='NULL')sp.push('&#128716; '+l.bhk);if(l.area_sqft>0&&l.area_sqft<50000)sp.push('&#128208; '+l.area_sqft.toLocaleString('en-IN'));if(l.rera_number)sp.push('&#9989; RERA');
+  const d=document.createElement('div');d.className='card';d.dataset.id=l.id;
+  d.innerHTML='<div class="cimg">'+(img?'<img src="'+img+'" loading="lazy">'+'<div class="cimg-ph" style="display:none">'+( CI[l.category]||'&#127968;')+'</div>':'<div class="cimg-ph">'+(CI[l.category]||'&#127968;')+'</div>')+'<div class="cgrad"></div><div class="cbadges"><span class="cbadge '+bc+'">'+bt+'</span><span class="cbadge cb-zero">&#10003; 0% Commission</span></div><div class="ind-like" id="il-'+l.id+'">LIKE &#10084;</div><div class="ind-nope" id="in-'+l.id+'">NOPE &#10005;</div></div><div class="cbody"><div class="cprice">'+(l.price_label||'&mdash;')+'</div><div class="ctitle">'+l.title+'</div><div class="cloc">&#128205; '+(l.area?l.area+', ':'')+(l.city||'&mdash;')+'</div>'+(food?'<div class="cfood">&#127869; '+food+'</div>':'')+(ams?'<div class="cams">'+ams+'</div>':'')+'<div class="cspecs">'+sp.join(' &middot; ')+'</div></div>';
   return d;
 }
-function renderDeck(){
-  const a=$('deck-area');
-  Array.from(a.children).forEach(c=>{if(c.id!=='deck-empty')c.remove()});
-  if(!deckQ.length){$('deck-empty').style.display='block';if(!a.contains($('deck-empty')))a.appendChild($('deck-empty'));$('sw-hint').style.display='none';return}
-  $('deck-empty').style.display='none';$('sw-hint').style.display='block';
-  deckQ.slice(0,3).slice().reverse().forEach(id=>{const c=mkCard(sMap[id]);a.appendChild(c)});
-  initSwipe(a.lastElementChild);
-}
-let sX=0,sY=0,dragging=false,dragEl=null;
-function initSwipe(card){
+let sx=0,sy=0,dragging=false,dragEl=null;
+function initTouch(card){
   if(!card)return;
-  const ts=e=>{sX=e.touches[0].clientX;sY=e.touches[0].clientY;dragging=true;dragEl=card;card.style.transition='none'};
-  const tm=e=>{if(!dragging||dragEl!==card)return;const dx=e.touches[0].clientX-sX,dy=e.touches[0].clientY-sY;card.style.transform='translateX('+dx+'px) translateY('+(dy*.25)+'px) rotate('+(dx*.07)+'deg)';showInd(card,dx)};
-  const te=e=>{if(!dragging||dragEl!==card)return;dragging=false;const dx=e.changedTouches[0].clientX-sX;if(Math.abs(dx)>72)flyCard(card,dx>0?'right':'left');else{card.classList.add('snap-back');card.style.transform='';hideInd(card)}};
-  card.addEventListener('touchstart',ts,{passive:true});
-  card.addEventListener('touchmove',tm,{passive:true});
-  card.addEventListener('touchend',te,{passive:true});
-  const md=e=>{sX=e.clientX;sY=e.clientY;dragging=true;dragEl=card;card.style.transition='none';e.preventDefault()};
-  const mm=e=>{if(!dragging||dragEl!==card)return;const dx=e.clientX-sX;card.style.transform='translateX('+dx+'px) rotate('+(dx*.06)+'deg)';showInd(card,dx)};
-  const mu=e=>{if(!dragging||dragEl!==card)return;dragging=false;const dx=e.clientX-sX;if(Math.abs(dx)>72)flyCard(card,dx>0?'right':'left');else{card.classList.add('snap-back');card.style.transform='';hideInd(card)}};
-  card.addEventListener('mousedown',md);document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+  const os=(cx,cy)=>{sx=cx;sy=cy;dragging=true;dragEl=card;card.style.transition='none'};
+  const om=(cx,cy)=>{
+    if(!dragging||dragEl!==card)return;
+    const dx=cx-sx,dy=cy-sy;
+    card.style.transform='translateX('+dx+'px) translateY('+(dy*.25)+'px) rotate('+(dx*.07)+'deg)';
+    const li=$('il-'+card.dataset.id),ni=$('in-'+card.dataset.id);
+    if(dx>40){if(li)li.style.opacity=Math.min((dx-40)/70,1);if(ni)ni.style.opacity=0}
+    else if(dx<-40){if(ni)ni.style.opacity=Math.min((-dx-40)/70,1);if(li)li.style.opacity=0}
+    else{if(li)li.style.opacity=0;if(ni)ni.style.opacity=0}
+  };
+  const oe=(cx)=>{
+    if(!dragging||dragEl!==card)return;dragging=false;
+    const dx=cx-sx;
+    if(Math.abs(dx)>85)flyCard(card,dx>0?'right':'left');
+    else{card.style.transition='transform .32s';card.style.transform='';const li=$('il-'+card.dataset.id),ni=$('in-'+card.dataset.id);if(li)li.style.opacity=0;if(ni)ni.style.opacity=0}
+  };
+  card.addEventListener('touchstart',e=>{os(e.touches[0].clientX,e.touches[0].clientY)},{passive:true});
+  card.addEventListener('touchmove',e=>{om(e.touches[0].clientX,e.touches[0].clientY)},{passive:true});
+  card.addEventListener('touchend',e=>{oe(e.changedTouches[0].clientX)},{passive:true});
+  card.addEventListener('mousedown',e=>os(e.clientX,e.clientY));
+  document.addEventListener('mousemove',e=>{if(dragging&&dragEl===card)om(e.clientX,e.clientY)});
+  document.addEventListener('mouseup',e=>{if(dragging&&dragEl===card)oe(e.clientX)});
 }
-function showInd(c,dx){const id=c.dataset.id,li=$('li-'+id),no=$('no-'+id);if(dx>30){if(li)li.style.opacity=Math.min((dx-30)/60,1);if(no)no.style.opacity=0}else if(dx<-30){if(no)no.style.opacity=Math.min((-dx-30)/60,1);if(li)li.style.opacity=0}else{if(li)li.style.opacity=0;if(no)no.style.opacity=0}}
-function hideInd(c){const id=c.dataset.id;const li=$('li-'+id),no=$('no-'+id);if(li)li.style.opacity=0;if(no)no.style.opacity=0}
 function flyCard(card,dir){
-  const id=card.dataset.id;card.classList.add(dir==='right'?'fly-r':'fly-l');
+  const id=card.dataset.id;
+  card.classList.add('anim');card.classList.add(dir==='right'?'fly-r':'fly-l');
   markSeen(id);if(dir==='right')addWL(id);recSwipe(id,dir);
-  setTimeout(()=>{card.remove();deckQ.shift();if(deckQ.length>=3){const nc=mkCard(sMap[deckQ[2]]);$('deck-area').insertBefore(nc,$('deck-area').firstChild)}
-  if(!deckQ.length){$('deck-empty').style.display='block';if(!$('deck-area').contains($('deck-empty')))$('deck-area').appendChild($('deck-empty'));$('sw-hint').style.display='none'}
-  else initSwipe($('deck-area').lastElementChild)},400);
+  setTimeout(()=>{
+    card.remove();deckQ.shift();
+    if(deckQ.length>=3){const deck=$('deck');const nc=makeCard(SM[deckQ[2]]);deck.insertBefore(nc,deck.firstChild)}
+    const cards=$('deck').querySelectorAll('.card');
+    cards.forEach((c,i)=>{
+      c.classList.remove('is-top');c.style.transform='';c.style.transition='';
+      if(i===cards.length-1){c.classList.add('is-top');initTouch(c)}
+      else if(i===cards.length-2){setTimeout(()=>{c.style.transition='transform .3s';c.style.transform='scale(.96) translateY(10px)'},50)}
+      else{setTimeout(()=>{c.style.transition='transform .3s';c.style.transform='scale(.93) translateY(20px)'},50)}
+    });
+    if(!deckQ.length){$('no-cards').style.display='block';$('shint').style.display='none'}
+  },420);
 }
-function topCard(){const cs=Array.from($('deck-area').children).filter(c=>c.classList.contains('swipe-card'));return cs[cs.length-1]||null}
-function doSwipe(dir){const c=topCard();if(!c){toast('No more listings!');return}flyCard(c,dir);if(dir==='right')toast('❤️ Saved!')}
-function enquireTop(){const c=topCard();if(!c||!c.dataset?.id)return;const l=sMap[c.dataset.id];if(!l)return;const m=encodeURIComponent('Hi! I found "'+l.title+'" in '+l.city+' at '+(l.price_label||'this price')+' on Wodoor. I\'m interested — can we talk?');window.open('https://wa.me/'+WA+'?text='+m,'_blank');recEnq(c.dataset.id);flyCard(c,'right')}
-function detailTop(){const c=topCard();if(c)showDetail(c.dataset.id)}
-function markSeen(id){const k='wo_s_'+(buyer?.id||'g');const s=JSON.parse(localStorage.getItem(k)||'[]');if(!s.includes(id)){s.push(id);localStorage.setItem(k,JSON.stringify(s))}}
-function recSwipe(id,dir){if(!buyer?.id)return;api('/rest/v1/wo_swipes','POST',{buyer_id:buyer.id,listing_id:id,direction:dir});const l=sMap[id];if(l){const col=dir==='right'?'swipe_right_count':'swipe_left_count';api('/rest/v1/wo_listings?id=eq.'+id,'PATCH',{[col]:(l[col]||0)+1})}buyer.total_swipes=(buyer.total_swipes||0)+1;if(dir==='right')buyer.total_right=(buyer.total_right||0)+1;localStorage.setItem('wo_b',JSON.stringify(buyer))}
-function recEnq(id){if(!buyer?.id)return;const l=sMap[id];if(l)api('/rest/v1/wo_listings?id=eq.'+id,'PATCH',{enquiry_count:(l.enquiry_count||0)+1});buyer.total_enquiries=(buyer.total_enquiries||0)+1;localStorage.setItem('wo_b',JSON.stringify(buyer))}
-function addWL(id){if(!wl.includes(id)){wl.push(id);localStorage.setItem('wo_wl_'+(buyer?.id||'g'),JSON.stringify(wl))}}
-function loadWL(){wl=JSON.parse(localStorage.getItem('wo_wl_'+(buyer?.id||'g'))||'[]');renderWL()}
-function renderWL(){const list=$('wl-list'),cnt=$('wl-count');if(!list)return;if(cnt)cnt.textContent=wl.length+' saved listing'+(wl.length!==1?'s':'');if(!wl.length){list.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:38px;margin-bottom:12px">🤍</div><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">No saved listings yet</div><div style="font-size:13px">Swipe right on listings you love</div></div>';return}list.innerHTML=wl.map(id=>{const l=sMap[id];if(!l)return'';const img=l.cover_image_url||(l.image_urls?.[0]);const wa=encodeURIComponent('Hi! I saved "'+l.title+'" on Wodoor. Interested!');return'<div class="wl-card" onclick="showDetail(\''+id+'\')">'+(img?'<img class="wl-img" src="'+img+'" loading="lazy">'
-  :'<div class="wl-img-ph">'+(CI[l.category]||'🏠')+'</div>')+'<div class="wl-body"><div class="wl-price">'+(l.price_label||'—')+'</div><div class="wl-name">'+l.title+'</div><div class="wl-loc">📍 '+(l.area?l.area+', ':'')+l.city+'</div></div>'+'<button class="wl-chat" onclick="event.stopPropagation();window.open(\'https://wa.me/'+WA+'?text='+wa+'\',\'_blank\')">💬 Chat</button></div>';}).join('')}
-function showDetail(id){const l=sMap[id];if(!l)return;const img=l.cover_image_url||(l.image_urls?.[0]);const wa=encodeURIComponent('Hi! Interested in "'+l.title+'" on Wodoor. Can we schedule a visit?');$('d-content').innerHTML=(img?'<img class="d-img" src="'+img+'">'
-  :'<div style="height:180px;background:var(--brand-pale);display:flex;align-items:center;justify-content:center;font-size:52px">'+(CI[l.category]||'🏠')+'</div>')+'<div class="d-body"><div style="font-family:var(--f-h);font-size:22px;font-weight:900;color:var(--brand);margin-bottom:4px">'+(l.price_label||'—')+'</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:5px">'+l.title+'</div><div style="font-size:12px;color:var(--muted);margin-bottom:14px">📍 '+(l.area?l.area+', ':'')+l.city+'</div>'+(l.description?'<div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px">'+l.description+'</div>':'')+((l.amenities||[]).length?'<div style="margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px">'+(l.amenities||[]).map(a=>'<div style="background:var(--brand-pale);color:var(--brand-d);font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:100px">'+a+'</div>').join('')+'</div>':'')+(l.rera_number?'<div style="background:#DCFCE7;border:1px solid #BBF7D0;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:#16a34a;margin-bottom:14px">✅ RERA: '+l.rera_number+'</div>':'')+'<a href="https://wa.me/'+WA+'?text='+wa+'" target="_blank" style="display:block;text-align:center;padding:15px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-radius:12px;font-size:14px;font-weight:800;text-decoration:none;font-family:var(--f-h)">💬 Enquire on WhatsApp</a><div style="font-size:10.5px;color:var(--muted);text-align:center;margin-top:8px">✓ Zero commission · Direct from owner</div></div>';$('detail-sheet').classList.add('show')}
-function closeDetail(){$('detail-sheet').classList.remove('show')}
-function switchTab(t){['swipe','watchlist','profile'].forEach(x=>$('bn-'+x)?.classList.remove('on'));$('bn-'+t)?.classList.add('on');if(t==='swipe')showScreen('screen-swipe');else if(t==='watchlist'){showScreen('screen-watchlist');renderWL()}else if(t==='profile'){showScreen('screen-profile');updProf()}}
-function updProf(){if(!buyer)return;$('prof-name').textContent=buyer.name||'Buyer';$('prof-phone').textContent=buyer.phone||'';$('ps-seen').textContent=buyer.total_swipes||0;$('ps-saved').textContent=buyer.total_right||0;$('ps-enq').textContent=buyer.total_enquiries||0;const fp=v=>{if(!v)return'';if(v>=10000000)return'₹'+(v/10000000).toFixed(1)+' Cr';if(v>=100000)return'₹'+(v/100000).toFixed(0)+' L';return'₹'+v};const chips=[...(prefs.category||[]).map(c=>(CI[c]||'')+' '+c.replace(/_/g,' ')), ...(prefs.city||[]), ...(prefs.bhk||[]), prefs.budget_max?'Budget: '+fp(prefs.budget_max):null].filter(Boolean);$('prof-prefs').innerHTML=chips.map(t=>'<div class="pchip">'+t+'</div>').join('')}
-async function reloadDeck(){$('ld').classList.remove('gone');localStorage.removeItem('wo_s_'+(buyer?.id||'g'));await loadDeck()}
-function doLogout(){localStorage.removeItem('wo_b');buyer=null;listings=[];deckQ=[];wl=[];sMap={};prefs={intent:[],category:[],bhk:[],city:[],budget_max:null};showScreen('screen-phone')}
-(async()=>{const s=localStorage.getItem('wo_b');if(s){buyer=JSON.parse(s);prefs.city=buyer.pref_cities||[];prefs.category=buyer.pref_categories||[];prefs.bhk=buyer.pref_bhk||[];prefs.budget_max=buyer.pref_budget_max||null;await loadDeck()}else{$('ld').classList.add('gone');showScreen('screen-phone')}updPrefsUI()})();
+function topCard(){return $('deck').querySelector('.card.is-top')}
+function doSwipe(dir){const c=topCard();if(!c){toast('No more cards!');return}flyCard(c,dir);if(dir==='right')toast('&#10084; Saved!')}
+function doEnquire(){const c=topCard();if(!c?.dataset?.id)return;const l=SM[c.dataset.id];if(!l)return;const m=encodeURIComponent('Hi! I saw '+l.title+' in '+l.city+' at '+(l.price_label||'this price')+' on Wodoor. I\'m interested — can we talk?');window.open('https://wa.me/'+WA+'?text='+m,'_blank');recEnq(c.dataset.id);doSwipe('right')}
+function markSeen(id){const k='wo_seen_'+(buyer?.id||'g');const s=JSON.parse(localStorage.getItem(k)||'[]');if(!s.includes(id)){s.push(id);localStorage.setItem(k,JSON.stringify(s))}}
+async function recSwipe(id,dir){if(!buyer?.id)return;await post('wo_swipes',{buyer_id:buyer.id,listing_id:id,direction:dir});const l=SM[id];if(l){const col=dir==='right'?'swipe_right_count':'swipe_left_count';await patch('wo_listings','?id=eq.'+id,{[col]:(l[col]||0)+1})}}
+async function recEnq(id){if(!buyer?.id)return;const l=SM[id];if(l)await patch('wo_listings','?id=eq.'+id,{enquiry_count:(l.enquiry_count||0)+1})}
+async function reloadDeck(){$('loader').classList.remove('gone');localStorage.removeItem('wo_seen_'+(buyer?.id||'g'));await fetchL();buildDeck();$('loader').classList.add('gone')}
+
+// WATCHLIST
+function addWL(id){if(!watchlist.includes(id)){watchlist.push(id);localStorage.setItem('wo_wl_'+(buyer?.id||'g'),JSON.stringify(watchlist));$('wl-badge').textContent=watchlist.length}}
+function loadWL(){watchlist=JSON.parse(localStorage.getItem('wo_wl_'+(buyer?.id||'g'))||'[]');$('wl-badge').textContent=watchlist.length;renderWL()}
+function renderWL(){
+  const list=$('wl-list');const sub=$('wl-sub');
+  if(sub)sub.textContent=watchlist.length+' saved propert'+(watchlist.length===1?'y':'ies');
+  if(!watchlist.length){list.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:40px;margin-bottom:10px">&#129293;</div><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">No saved listings yet</div><div>Swipe right on listings you love</div></div>';return}
+  list.innerHTML=watchlist.map(id=>{const l=SM[id];if(!l)return'';const img=l.cover_image_url||(l.image_urls&&l.image_urls[0]);const wa=encodeURIComponent('Hi! I saved '+l.title+' on Wodoor. I\'m interested!');return'<div class="wlcard">'+(img?'<img class="wlimg" src="'+img+'" loading="lazy">'+'':'<div class="wlph">'+(CI[l.category]||'&#127968;')+'</div>')+'<div class="wlbody"><div class="wlprice">'+(l.price_label||'&mdash;')+'</div><div class="wlname">'+l.title+'</div><div class="wlloc">&#128205; '+(l.area?l.area+', ':'')+( l.city||'')+'</div></div><button class="wlenq" onclick="window.open(\'https://wa.me/'+WA+'?text='+wa+'\',\'_blank\')">&#128172; Chat</button></div>';}).join('')
+}
+
+// DETAIL
+function showDetail(){const c=topCard();if(!c?.dataset?.id)return;const l=SM[c.dataset.id];if(!l)return;const img=l.cover_image_url||(l.image_urls&&l.image_urls[0]);const wa=encodeURIComponent('Hi! I\'m interested in '+l.title+' at '+(l.price_label||'this price')+' — seen on Wodoor. Can we arrange a visit?');$('sheet-content').innerHTML=(img?'<img class="sheet-img" src="'+img+'">':'')+'<div class="sheet-body"><div style="font-family:var(--f-h);font-size:22px;font-weight:900;color:var(--brand);margin-bottom:4px">'+(l.price_label||'&mdash;')+'</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:5px">'+l.title+'</div><div style="font-size:12px;color:var(--muted);margin-bottom:14px">&#128205; '+(l.area?l.area+', ':'')+(l.city||'&mdash;')+'</div>'+(l.description?'<div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px">'+l.description+'</div>':'')+((l.amenities||[]).length?'<div style="margin-bottom:14px"><div style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Amenities</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+(l.amenities||[]).map(a=>'<div style="background:var(--brand-pale);color:var(--brand-d);font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:100px">'+a+'</div>').join('')+'</div></div>':'')+(l.rera_number?'<div style="background:#DCFCE7;border:1px solid #BBF7D0;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:#16a34a;margin-bottom:14px">&#9989; RERA: '+l.rera_number+'</div>':'')+'<a href="https://wa.me/'+WA+'?text='+wa+'" target="_blank" style="display:block;text-align:center;padding:15px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border-radius:12px;font-size:14px;font-weight:800;text-decoration:none;font-family:var(--f-h)">&#128172; Enquire on WhatsApp</a><div style="font-size:10.5px;color:var(--muted);text-align:center;margin-top:8px">&#10003; Zero commission &middot; Direct from owner</div></div>';$('sheet-wrap').classList.add('on')}
+function closeSheet(){$('sheet-wrap').classList.remove('on')}
+
+// PROFILE
+function updatePF(){if(!buyer)return;$('pf-name').textContent=buyer.name||'Anonymous';$('pf-phone').textContent=buyer.phone||'';$('pf-seen').textContent=buyer.total_swipes||0;$('pf-saved').textContent=buyer.total_right||0;$('pf-enq').textContent=buyer.total_enquiries||0;const all=[...(prefs.category||[]).map(c=>(CI[c]||'')+'  '+c.replace(/_/g,' ')).filter(Boolean),...(prefs.city||[]),...(prefs.bhk||[]),prefs.budget_max?'Budget: '+fmt(prefs.budget_max):null].filter(Boolean);$('pf-chips').innerHTML=all.map(t=>'<div class="pchip">'+t+'</div>').join('')}
+
+// TAB SWITCH
+function tab(t){
+  const m={swipe:'screen-swipe',wl:'screen-wl',profile:'screen-profile'};
+  go(m[t]||'screen-swipe');
+  document.querySelectorAll('.btmbtn').forEach(b=>b.classList.remove('on'));
+  const all=document.querySelectorAll('[onclick*="tab(\''+t+'\')"]');all.forEach(b=>b.classList.add('on'));
+  if(t==='wl')renderWL();
+  if(t==='profile')updatePF();
+}
+
+// INIT
+(async()=>{
+  const saved=localStorage.getItem('wo_b');
+  if(saved){
+    try{buyer=JSON.parse(saved);prefs.city=buyer.pref_cities||[];prefs.category=buyer.pref_categories||[];prefs.bhk=buyer.pref_bhk||[];prefs.budget_max=buyer.pref_budget_max||null;await loadDeck();}
+    catch(e){localStorage.removeItem('wo_b');go('screen-auth');$('loader').classList.add('gone')}
+  }else{go('screen-auth');$('loader').classList.add('gone')}
+})();
 </script>
 </body>
 </html>
