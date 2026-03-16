@@ -472,7 +472,7 @@ const AH={'apikey':AK,'Authorization':'Bearer '+AK,'Content-Type':'application/j
 const CI={apartment:'fa-building',penthouse:'fa-building-columns',villa:'fa-house-chimney',row_house:'fa-house-flag',independent_house:'fa-house',studio:'fa-door-open',pg_hostel:'fa-bed',co_living:'fa-people-group',guest_house:'fa-hotel',service_apt:'fa-concierge-bell',commercial_office:'fa-briefcase',shop:'fa-shop',showroom:'fa-car',warehouse:'fa-warehouse',plot:'fa-vector-square',agricultural:'fa-seedling',farmland:'fa-wheat-awn',eco_plot:'fa-leaf',farmhouse:'fa-tractor',pre_launch:'fa-helmet-safety'};
 const CN={apartment:'Apartment',penthouse:'Penthouse',villa:'Villa',row_house:'Row House',independent_house:'Indep. House',studio:'Studio',pg_hostel:'PG/Hostel',co_living:'Co-Living',guest_house:'Guest House',service_apt:'Service Apt',commercial_office:'Office',shop:'Shop',showroom:'Showroom',warehouse:'Warehouse',plot:'Plot',agricultural:'Agri Land',farmland:'Farmland',eco_plot:'Eco Plot',farmhouse:'Farmhouse',pre_launch:'Pre-Launch'};
 
-let buyer=null,ph='',deckQ=[],SM={},SL=[],convos=[],prefs={intent:[],category:[],bhk:[],city:[],budget_max:null,notsure:{}},pStep=1,rT=null,visitLid=null,visitSel={date:null,time:null};
+let buyer=null,ph='',deckQ=[],SM={},SL=[],convos=[],prefs={intent:[],category:[],bhk:[],city:[],budget_max:null,notsure:{}},pStep=1,rT=null,visitLid=null,visitSel={date:null,time:null},nearbyCity=null;
 const $=id=>document.getElementById(id);
 const go=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id)&&$(id).classList.add('on')};
 function toast(m,d=2400){const e=$('toast');e.textContent=m;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),d)}
@@ -540,7 +540,12 @@ function detectLoc(){
     pill.classList.remove('detecting');
     txt.innerHTML='<i class="fa-solid fa-location-dot"></i> '+nearest;
     // Auto-add to city prefs
-    if(nearest&&!prefs.city.includes(nearest)){prefs.city.push(nearest);reloadDeck();}
+    nearbyCity=nearest;
+    if(nearest){
+      if(!prefs.city.includes(nearest))prefs.city.push(nearest);
+      localStorage.removeItem('ws_'+(buyer?.id||'g'));
+      reloadDeck();
+    }
     toast('\uD83D\uDCCD Showing listings near '+nearest);
   },err=>{
     pill.classList.remove('detecting');
@@ -639,18 +644,26 @@ async function saveGo(){
 // ── DECK ──────────────────────────────────────────────────────────
 async function loadDeck(){go('sc-swipe');$('ldr').classList.add('gone');await fetchL();buildDeck();loadSL();updPF();loadMsgs();detectLoc();}
 async function fetchL(){
-  let url=SUPA+'/rest/v1/wo_listings?status=eq.active&order=featured.desc,swipe_right_count.desc&limit=150';
-  // Apply city filter only if user selected cities (not "not sure")
+  let url=SUPA+'/rest/v1/wo_listings?status=eq.active&order=featured.desc,swipe_right_count.desc&limit=200';
+  // Build city list: user prefs + detected nearby city
   const nsCity=prefs.notsure&&prefs.notsure['ns_city'];
-  if(!nsCity&&prefs.city?.length)url+='&city=in.('+prefs.city.map(c=>encodeURIComponent(c)).join(',')+')';
+  const cities=[...(prefs.city||[])];
+  if(nearbyCity&&!cities.includes(nearbyCity))cities.push(nearbyCity);
+  if(!nsCity&&cities.length)url+='&city=in.('+cities.map(c=>encodeURIComponent(c)).join(',')+')';
   if(prefs.budget_max&&!(prefs.notsure&&prefs.notsure['ns_budget_max']))url+='&price=lte.'+prefs.budget_max;
   let d=await fetch(url,{headers:AH}).then(r=>r.json()).catch(()=>[]);
   if(!Array.isArray(d))d=[];
   const nscat=prefs.notsure&&prefs.notsure['ns_category'];
   if(!nscat&&prefs.category?.length)d=d.filter(l=>prefs.category.includes(l.category));
   const seen=JSON.parse(localStorage.getItem('ws_'+(buyer?.id||'g'))||'[]');
-  d=d.filter(l=>!seen.includes(l.id));
-  d.forEach(l=>SM[l.id]=l);deckQ=d.map(l=>l.id);
+  const unseen=d.filter(l=>!seen.includes(l.id));
+  // If we've seen everything, show them all again (fresh start)
+  const final = unseen.length > 0 ? unseen : d;
+  if(unseen.length===0&&d.length>0){
+    localStorage.removeItem('ws_'+(buyer?.id||'g'));
+    toast('🔄 Showing all listings again!');
+  }
+  final.forEach(l=>SM[l.id]=l);deckQ=final.map(l=>l.id);
 }
 function buildDeck(){
   const deck=$('deck');deck.querySelectorAll('.card').forEach(c=>c.remove());
